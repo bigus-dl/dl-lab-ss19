@@ -71,12 +71,9 @@ for epoch in range(1,num_epochs):
         optimizer.step()
         if (idx>=5) :
             break
-    print("epoch {0}/{1}".format(epoch,num_epochs))
+    print("epoch {0}/{1} : avg. training loss : {}".format(epoch,num_epochs,train_loss/len(train_loader)))
     training_errors.append(train_loss/len(train_loader))
-    print("avg. training loss : {}".format(training_errors[-1]))
-    
     if epoch % 5 == 0: 
-        print("saving snapshopt @ epoch{}".format(epoch))
         with torch.no_grad():
             model.eval()
             val_loss = 0
@@ -91,10 +88,11 @@ for epoch in range(1,num_epochs):
                  val_loss += torch.mean(loss).item()
                  if(idx>=5) :
                     break 
-            print("validation loss : {}".format(val_loss))
+            print("validation loss : {}, MPJPE : {} pixels".format(val_loss,mpjpe/len(val_loader)))
             validation_errors.append(val_loss)
-            print("MPJPE : {} pixels".format(mpjpe/len(val_loader)))
 
+        print("saving snapshot @ epoch {}".format(epoch))
+        print("training error # {}    validation error # {}".format(len(training_errors),len(validation_errors)))
         # save model state
         torch.save(model.state_dict(), PATH)
         torch.save(optimizer.state_dict(), OPATH)
