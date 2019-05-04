@@ -22,7 +22,7 @@ parser.add_argument('-fbatch', type=int, dest="figure_batch", default=5)
 parser.add_argument('-fepoch', type=int, dest="figure_epoch", default=10)
 parser.add_argument('-epochs', type=int, dest="num_epochs", default=2000)
 args = parser.parse_args()
-print("settings :\n continute flag: {}\t batch size: {}\t plot batch #: {}".format(args.cont,args.batch_size,args.figure_batch))
+print("settings :\ncontinute flag: {}\t batch size: {}\t plot batch #: {}".format(args.cont,args.batch_size,args.figure_batch))
 print("plot every: {}\t number of epochs: {}".format(args.figure_epoch,args.num_epochs))
 # cuda & model init
 print("initializing model, cuda ...")
@@ -102,12 +102,12 @@ for epoch in range(1,args.num_epochs):
                     pred = model(img, '')
                     
                     # show results
-                    print("img shape {}  img_np shape{}".format(img.shape,img_np.shape))
                     img_np = np.transpose(img.cpu().detach().numpy(), [0, 2, 3, 1])
                     img_np = np.round((img_np + 1.0) * 127.5).astype(np.uint8)
                     kp_pred = pred.cpu().detach().numpy().reshape([-1, 17, 2])
                     kp_gt = keypoints.cpu().detach().numpy().reshape([-1, 17, 2])
                     vis = weights.cpu().detach().numpy().reshape([-1, 17])
+                    print("img shape {}  img_np shape{}".format(img.shape,img_np.shape))
                     
                     for bid in range(img_np.shape[0]):                
                         fig = plt.figure()
