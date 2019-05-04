@@ -31,7 +31,8 @@ optimizer = optim.Adam(model.parameters(), lr=1e-4)
 loss_fn = torch.nn.MSELoss(reduction='mean')
 
 train_loss = val_loss = 0
-training_errors = validation_errors = []
+training_errors = []
+validation_errors = []
 
 # if flag --c is set, continute training from a previous snapshot
 if(args.c):
