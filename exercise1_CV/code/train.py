@@ -92,7 +92,7 @@ for epoch in range(1,args.num_epochs):
                  mpjpe += torch.mean(torch.sqrt(loss)).item()
                  val_loss += torch.mean(loss).item()
                  # saving predictions from batch 5 every 10 epochs
-                 if(idx==args.figure_batch and epoch%figure_epoch==0) :
+                 if(idx==args.figure_batch and epoch%args.figure_epoch==0) :
                      # normalize keypoints to [0, 1] range
                     keypoints = normalize_keypoints(keypoints, img.shape)
 
