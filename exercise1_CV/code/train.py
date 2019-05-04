@@ -6,6 +6,7 @@ import torch
 from model.model import ResNetModel
 from model.data import get_data_loader
 from utils.plot_util import plot_keypoints
+from run_forward import normalize_keypoints
 
 import argparse
 import pickle
@@ -76,7 +77,7 @@ for epoch in range(1,args.num_epochs):
             break
     
     training_errors.append(train_loss/len(train_loader))
-    print("epoch {}/{} : avg. training loss = {}   array size {}".format(epoch,args.num_epochs,training_errors[-1],len(training_errors)))
+    print("epoch {}/{} : avg. training loss = {}".format(epoch,args.num_epochs,training_errors[-1]))
     
     if epoch % 5 == 0: 
         with torch.no_grad():
