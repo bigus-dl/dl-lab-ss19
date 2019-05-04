@@ -74,8 +74,6 @@ for epoch in range(1,args.num_epochs):
         train_loss += loss.item()
         loss.backward()
         optimizer.step()
-        if (idx>=5) :
-            break
     
     training_errors.append(train_loss/len(train_loader))
     print("epoch {}/{} : avg. training loss = {}".format(epoch,args.num_epochs,training_errors[-1]))
@@ -116,10 +114,10 @@ for epoch in range(1,args.num_epochs):
                         plot_keypoints(ax1, kp_gt[bid], vis[bid], img_size=img_np[bid].shape[:2], draw_limbs=True, draw_kp=True)
                         ax2.imshow(img_np[bid])#, ax2.axis('off'), ax2.set_title('input + pred')
                         plot_keypoints(ax2, kp_pred[bid], vis[bid], img_size=img_np[bid].shape[:2], draw_limbs=True, draw_kp=True)
-                        
                         plt.savefig("results/fig_id{}_epoch{}.png".format(bid,epoch))
-                if (idx>=5) :
-                    break
+                        # save only 1 figure
+                        break
+
             print("validation loss : {}, MPJPE : {} pixels".format(val_loss,mpjpe/len(val_loader)))
             validation_errors.append(val_loss)
 
