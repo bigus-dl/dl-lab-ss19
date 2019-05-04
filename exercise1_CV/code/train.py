@@ -110,9 +110,9 @@ for epoch in range(1,args.num_epochs):
                         fig = plt.figure()
                         ax1 = fig.add_subplot(121)
                         ax2 = fig.add_subplot(122)
-                        ax1.imshow(img_np[bid])#, ax1.axis('off'), ax1.set_title('input + gt')
+                        ax1.imshow(img_np[bid]), ax1.axis('off'), ax1.set_title('input + gt')
                         plot_keypoints(ax1, kp_gt[bid], vis[bid], img_size=img_np[bid].shape[:2], draw_limbs=True, draw_kp=True)
-                        ax2.imshow(img_np[bid])#, ax2.axis('off'), ax2.set_title('input + pred')
+                        ax2.imshow(img_np[bid]), ax2.axis('off'), ax2.set_title('input + pred')
                         plot_keypoints(ax2, kp_pred[bid], vis[bid], img_size=img_np[bid].shape[:2], draw_limbs=True, draw_kp=True)
                         plt.savefig("results/fig_id{}_epoch{}.png".format(bid,epoch))
                         # save only 1 figure
@@ -122,7 +122,6 @@ for epoch in range(1,args.num_epochs):
             validation_errors.append(val_loss)
 
         print("saving snapshot @ epoch {}".format(epoch))
-        print("training error # {}    validation error # {}".format(len(training_errors),len(validation_errors)))
         # save model state
         torch.save(model.state_dict(), PATH)
         torch.save(optimizer.state_dict(), OPATH)
