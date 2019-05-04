@@ -26,7 +26,7 @@ model.to(cuda)
 # training loop init
 optimizer = optim.Adam(model.parameters(), lr=1e-4)
 # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=100)
-loss_fn = torch.nn.MSELoss(reduction='elementwise_mean')
+loss_fn = torch.nn.MSELoss(reduction='mean')
 
 train_loss = val_loss = 0
 training_errors = validation_errors = []
@@ -81,11 +81,11 @@ for epoch in range(num_epochs):
                  output = model(img, '')
                  loss = loss_fn(keypoints, output)*(weights.repeat_interleave(2).float())
                  mpjpe += torch.mean(torch.sqrt(loss)).item()
-                 eval_loss += torch.mean(loss).item()
+                 val_loss += torch.mean(loss).item()
                  if(idx>=5) :
                     break 
             print("validation loss : {}".format(val_loss))
-            validation_errors.append(eval_loss)
+            validation_errors.append(val_loss)
             print("MPJPE : {} pixels".format(mpjpe/len(val_loader)))
 
         # save model state
