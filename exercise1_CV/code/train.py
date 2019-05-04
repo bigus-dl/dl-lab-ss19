@@ -71,8 +71,10 @@ for epoch in range(1,num_epochs):
         optimizer.step()
         if (idx>=5) :
             break
-    print("epoch {0}/{1} : avg. training loss : {}".format(epoch,num_epochs,train_loss/len(train_loader)))
+        
     training_errors.append(train_loss/len(train_loader))
+    print("epoch {0}/{1} : avg. training loss : {}".format(epoch,num_epochs,training_errors[-1]))
+    
     if epoch % 5 == 0: 
         with torch.no_grad():
             model.eval()
