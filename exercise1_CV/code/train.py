@@ -12,12 +12,14 @@ import pickle
 
 PATH = "model/fuckme.pth"
 OPATH = "model/fuckyou.pth"
-batch_size = 5
-num_epochs = 2000
-epoch_shift = 0
 
+epoch_shift = 0
 parser = argparse.ArgumentParser()
-parser.add_argument("--c", action = "store_true", default = False)
+parser.add_argument("--cont", action = "store_true", default = False)
+parser.add_argument('-bsize', action="store_const", dest="batch_size", type=int default=5)
+parser.add_argument('-fbatch', action="store_const", dest="figure_batch", type=int default=5)
+parser.add_argument('-fepoch', action="store_const", dest="figure_epoch", type=int default=10)
+parser.add_argument('-epochs', action="store_const", dest="num_epochs", type=int default=2000)
 args = parser.parse_args()
 
 # cuda & model init
@@ -49,11 +51,11 @@ if(args.c):
 
 
 # get data loaders
-train_loader = get_data_loader(batch_size, is_train=True)
-val_loader = get_data_loader(batch_size, is_train=False)
+train_loader = get_data_loader(args.batch_size, is_train=True)
+val_loader = get_data_loader(args.batch_size, is_train=False)
 
 
-for epoch in range(1,num_epochs):
+for epoch in range(1,args.num_epochs):
     # if resuming training, update epoch #
     if(epoch<epoch_shift and args.c) :
         continue
@@ -74,7 +76,7 @@ for epoch in range(1,num_epochs):
             break
     
     training_errors.append(train_loss/len(train_loader))
-    print("epoch {}/{} : avg. training loss = {}   array size {}".format(epoch,num_epochs,training_errors[-1],len(training_errors)))
+    print("epoch {}/{} : avg. training loss = {}   array size {}".format(epoch,args.num_epochs,training_errors[-1],len(training_errors)))
     
     if epoch % 5 == 0: 
         with torch.no_grad():
@@ -89,8 +91,31 @@ for epoch in range(1,num_epochs):
                  loss = loss_fn(keypoints, output)*(weights.repeat_interleave(2).float())
                  mpjpe += torch.mean(torch.sqrt(loss)).item()
                  val_loss += torch.mean(loss).item()
-                 if(idx>=5) :
-                    break 
+                 # saving predictions from batch 5 every 10 epochs
+                 if(idx==args.figure_batch and epoch%figure_epoch==0) :
+                     # normalize keypoints to [0, 1] range
+                    keypoints = normalize_keypoints(keypoints, img.shape)
+
+                    # apply model
+                    pred = model(img, '')
+
+                    # show results
+                    img_np = np.transpose(img.cpu().detach().numpy(), [0, 2, 3, 1])
+                    img_np = np.round((img_np + 1.0) * 127.5).astype(np.uint8)
+                    kp_pred = pred.cpu().detach().numpy().reshape([-1, 17, 2])
+                    kp_gt = keypoints.cpu().detach().numpy().reshape([-1, 17, 2])
+                    vis = weights.cpu().detach().numpy().reshape([-1, 17])
+
+                    for bid in range(img_np.shape[0]):
+                        fig = plt.figure()
+                        ax1 = fig.add_subplot(121)
+                        ax2 = fig.add_subplot(122)
+                        ax1.imshow(img_np[bid]), ax1.axis('off'), ax1.set_title('input + gt')
+                        plot_keypoints(ax1, kp_gt[bid], vis[bid], img_size=img_np[bid].shape[:2], draw_limbs=True, draw_kp=True)
+                        ax2.imshow(img_np[bid]), ax2.axis('off'), ax2.set_title('input + pred')
+                        plot_keypoints(ax2, kp_pred[bid], vis[bid], img_size=img_np[bid].shape[:2], draw_limbs=True, draw_kp=True)
+                        plt.savefig("fig_id{}_epoch{}.png".format(bid,epoch))
+                     break
             print("validation loss : {}, MPJPE : {} pixels".format(val_loss,mpjpe/len(val_loader)))
             validation_errors.append(val_loss)
 
