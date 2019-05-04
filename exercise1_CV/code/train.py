@@ -42,8 +42,8 @@ if(args.c):
         training_errors = pickle.load(filehandle)
     with open('results/validation.errors', 'rb') as filehandle:
         training_errors = pickle.load(filehandle)
-    epoch_shift = len(training_errors)
-    print("resuming training from epoch {}".format(epoch_shift+1))
+    epoch_shift = len(training_errors) + 1
+    print("resuming training from epoch {}".format(epoch_shift))
 
 
 
@@ -52,7 +52,7 @@ train_loader = get_data_loader(batch_size, is_train=True)
 val_loader = get_data_loader(batch_size, is_train=False)
 
 
-for epoch in range(num_epochs):
+for epoch in range(1,num_epochs):
     # if resuming training, update epoch #
     if(epoch<epoch_shift and args.c) :
         continue
@@ -71,7 +71,7 @@ for epoch in range(num_epochs):
         optimizer.step()
         if (idx>=5) :
             break
-    print("epoch {0}/{1}".format(epoch+1,num_epochs))
+    print("epoch {0}/{1}".format(epoch,num_epochs))
     training_errors.append(train_loss/len(train_loader))
     print("avg. training loss : {}".format(training_errors[-1]))
     
