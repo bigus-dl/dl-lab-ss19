@@ -86,39 +86,40 @@ for epoch in range(1,args.num_epochs):
             val_loss = 0
             mpjpe = 0
             for idx, (img, keypoints, weights) in enumerate(val_loader):
-                img = img.to(cuda)
-                keypoints = keypoints.to(cuda)
-                weights = weights.to(cuda)
-                output = model(img, '')
-                loss = loss_fn(keypoints, output)*(weights.repeat_interleave(2).float())
-                mpjpe += torch.mean(torch.sqrt(loss)).item()
-                val_loss += torch.mean(loss).item()
-                # saving predictions from batch 5 every 10 epochs
-                if(idx==args.figure_batch and epoch%args.figure_epoch==0)
-                    # normalize keypoints to [0, 1] range
-                    keypoints = normalize_keypoints(keypoints, img.shape)
+                 img = img.to(cuda)
+                 keypoints = keypoints.to(cuda)
+                 weights = weights.to(cuda)
+                 output = model(img, '')
+                 loss = loss_fn(keypoints, output)*(weights.repeat_interleave(2).float())
+                 mpjpe += torch.mean(torch.sqrt(loss)).item()
+                 val_loss += torch.mean(loss).item()
+                 # saving predictions from batch 5 every 10 epochs
+                 if(idx==args.figure_batch and epoch%args.figure_epoch==0) :
+                     # normalize keypoints to [0, 1] range
+                     keypoints = normalize_keypoints(keypoints, img.shape)
 
-                    # apply model
-                    pred = model(img, '')
+                     # apply model
+                     pred = model(img, '')
 
-                    # show results
-                    
-                    img_np = np.transpose(img.cpu().detach().numpy(), [0, 2, 3, 1])
-                    img_np = np.round((img_np + 1.0) * 127.5).astype(np.uint8)
-                    kp_pred = pred.cpu().detach().numpy().reshape([-1, 17, 2])
-                    kp_gt = keypoints.cpu().detach().numpy().reshape([-1, 17, 2])
-                    vis = weights.cpu().detach().numpy().reshape([-1, 17])
-                    print("img shape {}  img_np shape{}".format(img.shape,img_np.shape)) 
-                    for bid in range(img_np.shape[0]):                
-                        fig = plt.figure()
-                        ax1 = fig.add_subplot(121)
-                        ax2 = fig.add_subplot(122)
-                        ax1.imshow(img_np[bid]), ax1.axis('off'), ax1.set_title('input + gt')
-                        plot_keypoints(ax1, kp_gt[bid], vis[bid], img_size=img_np[bid].shape[:2], draw_limbs=True, draw_kp=True)
-                        ax2.imshow(img_np[bid]), ax2.axis('off'), ax2.set_title('input + pred')
-                        plot_keypoints(ax2, kp_pred[bid], vis[bid], img_size=img_np[bid].shape[:2], draw_limbs=True, draw_kp=True)
-                        plt.savefig("results/fig_id{}_epoch{}.png".format(bid,epoch))
-                        
+                     # show results
+                    print("img shape {}  img_np shape{}".format(img.shape,img_np.shape))
+                     img_np = np.transpose(img.cpu().detach().numpy(), [0, 2, 3, 1])
+                     img_np = np.round((img_np + 1.0) * 127.5).astype(np.uint8)
+                     kp_pred = pred.cpu().detach().numpy().reshape([-1, 17, 2])
+                     kp_gt = keypoints.cpu().detach().numpy().reshape([-1, 17, 2])
+                     vis = weights.cpu().detach().numpy().reshape([-1, 17])
+                     
+                     for bid in range(img_np.shape[0]):                
+                         fig = plt.figure()
+                         ax1 = fig.add_subplot(121)
+                         ax2 = fig.add_subplot(122)
+                         ax1.imshow(img_np[bid]), ax1.axis('off'), ax1.set_title('input + gt')
+                         plot_keypoints(ax1, kp_gt[bid], vis[bid], img_size=img_np[bid].shape[:2], draw_limbs=True, draw_kp=True)
+                         ax2.imshow(img_np[bid]), ax2.axis('off'), ax2.set_title('input + pred')
+                         plot_keypoints(ax2, kp_pred[bid], vis[bid], img_size=img_np[bid].shape[:2], draw_limbs=True, draw_kp=True)
+                         plt.savefig("results/fig_id{}_epoch{}.png".format(bid,epoch))
+                         # save only 1 image for now
+                         break
             print("validation loss : {}, MPJPE : {} pixels".format(val_loss,mpjpe/len(val_loader)))
             validation_errors.append(val_loss)
 
