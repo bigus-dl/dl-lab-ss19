@@ -37,7 +37,7 @@ training_errors = []
 validation_errors = []
 
 # if flag --c is set, continute training from a previous snapshot
-if(args.c):
+if(args.cont):
     print("--c flag set")
     model.load_state_dict(torch.load(PATH))
     optimizer.load_state_dict(torch.load(OPATH))
@@ -57,7 +57,7 @@ val_loader = get_data_loader(args.batch_size, is_train=False)
 
 for epoch in range(1,args.num_epochs):
     # if resuming training, update epoch #
-    if(epoch<epoch_shift and args.c) :
+    if(epoch<epoch_shift and args.cont) :
         continue
     model.train()
     train_loss=0
