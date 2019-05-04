@@ -14,6 +14,7 @@ PATH = "model/fuckme.pth"
 OPATH = "model/fuckyou.pth"
 batch_size = 5
 num_epochs = 2000
+epoch_shift = 0
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--c", action = "store_true", default = False)
@@ -41,7 +42,10 @@ if(args.c):
         training_errors = pickle.load(filehandle)
     with open('results/validation.errors', 'rb') as filehandle:
         training_errors = pickle.load(filehandle)
-    print("resuming training from epoch {}".format(len(training_errors)))
+    epoch_shift = len(training_errors)
+    print("resuming training from epoch {}".format(epoch_shift+1))
+
+
 
 # get data loaders
 train_loader = get_data_loader(batch_size, is_train=True)
@@ -50,9 +54,8 @@ val_loader = get_data_loader(batch_size, is_train=False)
 
 for epoch in range(num_epochs):
     # if resuming training, update epoch #
-    if(epoch==0 and args.c) :
-        epoch = len(training_errors) + 1
-        print ("training error len : {}".format(len(training_errors)))
+    if(epoch<epoch_shift and args.c) :
+        continue
     model.train()
     train_loss=0
     for idx, (img, keypoints, weights) in enumerate(train_loader):
@@ -72,7 +75,7 @@ for epoch in range(num_epochs):
     training_errors.append(train_loss/len(train_loader))
     print("avg. training loss : {}".format(training_errors[-1]))
     
-    if epoch % 5 == 0: 
+    if (epoch+1) % 5 == 0: 
         with torch.no_grad():
             model.eval()
             val_loss = 0
