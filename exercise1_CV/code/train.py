@@ -100,7 +100,7 @@ for epoch in range(1,args.num_epochs):
                     
                     # apply model
                     pred = model(img, '')
-                    
+                    pred = normalize_keypoints(pred, img.shape)
                     # show results
                     img_np = np.transpose(img.cpu().detach().numpy(), [0, 2, 3, 1])
                     img_np = np.round((img_np + 1.0) * 127.5).astype(np.uint8)
