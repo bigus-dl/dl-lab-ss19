@@ -73,7 +73,7 @@ for epoch in range(1,num_epochs):
             break
         
     training_errors.append(train_loss/len(train_loader))
-    print("epoch {0}/{1} : avg. training loss : {3}".format(epoch,num_epochs,training_errors[-1]))
+    print("epoch {}/{} : avg. training loss = {}".format(epoch,num_epochs,training_errors[-1]))
     
     if epoch % 5 == 0: 
         with torch.no_grad():
