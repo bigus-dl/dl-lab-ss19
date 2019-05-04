@@ -41,7 +41,7 @@ if(args.c):
     with open('results/training.errors', 'rb') as filehandle:
         training_errors = pickle.load(filehandle)
     with open('results/validation.errors', 'rb') as filehandle:
-        training_errors = pickle.load(filehandle)
+        validation_errors = pickle.load(filehandle)
     epoch_shift = len(training_errors) + 1
     print("resuming training from epoch {}".format(epoch_shift))
 
@@ -71,9 +71,9 @@ for epoch in range(1,num_epochs):
         optimizer.step()
         if (idx>=5) :
             break
-        
+    
     training_errors.append(train_loss/len(train_loader))
-    print("epoch {}/{} : avg. training loss = {}".format(epoch,num_epochs,training_errors[-1]))
+    print("epoch {}/{} : avg. training loss = {}   array size {}".format(epoch,num_epochs,training_errors[-1],len(training_errors)))
     
     if epoch % 5 == 0: 
         with torch.no_grad():
