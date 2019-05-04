@@ -16,7 +16,7 @@ batch_size = 5
 num_epochs = 2000
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--c", action = "store_true")
+parser.add_argument("--c", action = "store_true", default = False)
 args = parser.parse_args()
 
 # cuda & model init
@@ -31,8 +31,9 @@ loss_fn = torch.nn.MSELoss(reduction='mean')
 train_loss = val_loss = 0
 training_errors = validation_errors = []
 
-# if flag -c is set, continute training from a previous snapshot
+# if flag --c is set, continute training from a previous snapshot
 if(args.c):
+    print("--c flag set")
     model.load_state_dict(torch.load(PATH))
     optimizer.load_state_dict(torch.load(OPATH))
     with open('training.errors', 'rb') as filehandle:
@@ -48,7 +49,7 @@ val_loader = get_data_loader(batch_size, is_train=False)
 
 for epoch in range(num_epochs):
     # if resuming training, update epoch #
-    if(epoch==0 & args.c) :
+    if(epoch==0 and args.c) :
         epoch = len(training_errors) + 1
     model.train()
     train_loss=0
