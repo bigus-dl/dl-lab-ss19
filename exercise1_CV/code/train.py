@@ -16,10 +16,10 @@ OPATH = "model/fuckyou.pth"
 epoch_shift = 0
 parser = argparse.ArgumentParser()
 parser.add_argument("--cont", action = "store_true", default = False)
-parser.add_argument('-bsize', action="store_const", dest="batch_size", default=5)
-parser.add_argument('-fbatch', action="store_const", dest="figure_batch", default=5)
-parser.add_argument('-fepoch', action="store_const", dest="figure_epoch", default=10)
-parser.add_argument('-epochs', action="store_const", dest="num_epochs", default=2000)
+parser.add_argument('-bsize', type=int, dest="batch_size", default=5)
+parser.add_argument('-fbatch', type=int, dest="figure_batch", default=5)
+parser.add_argument('-fepoch', type=int, dest="figure_epoch", default=10)
+parser.add_argument('-epochs', type=int, dest="num_epochs", default=2000)
 args = parser.parse_args()
 
 # cuda & model init
