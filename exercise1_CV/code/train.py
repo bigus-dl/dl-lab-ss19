@@ -107,19 +107,19 @@ for epoch in range(1,args.num_epochs):
                     kp_pred = pred.cpu().detach().numpy().reshape([-1, 17, 2])
                     kp_gt = keypoints.cpu().detach().numpy().reshape([-1, 17, 2])
                     vis = weights.cpu().detach().numpy().reshape([-1, 17])
-                    print("img shape {}  img_np shape{}".format(img.shape,img_np.shape))
                     
                     for bid in range(img_np.shape[0]):                
                         fig = plt.figure()
                         ax1 = fig.add_subplot(121)
                         ax2 = fig.add_subplot(122)
-                        ax1.imshow(img_np[bid]), ax1.axis('off'), ax1.set_title('input + gt')
+                        ax1.imshow(img_np[bid])#, ax1.axis('off'), ax1.set_title('input + gt')
                         plot_keypoints(ax1, kp_gt[bid], vis[bid], img_size=img_np[bid].shape[:2], draw_limbs=True, draw_kp=True)
-                        ax2.imshow(img_np[bid]), ax2.axis('off'), ax2.set_title('input + pred')
+                        ax2.imshow(img_np[bid])#, ax2.axis('off'), ax2.set_title('input + pred')
                         plot_keypoints(ax2, kp_pred[bid], vis[bid], img_size=img_np[bid].shape[:2], draw_limbs=True, draw_kp=True)
+                        
                         plt.savefig("results/fig_id{}_epoch{}.png".format(bid,epoch))
                         # save only 1 image for now
-                        # break
+                        break
                 if (idx>=5) :
                     break
             print("validation loss : {}, MPJPE : {} pixels".format(val_loss,mpjpe/len(val_loader)))
