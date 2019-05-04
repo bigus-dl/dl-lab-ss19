@@ -39,6 +39,7 @@ if(args.c):
         training_errors = pickle.load(filehandle)
     with open('validation.errors', 'rb') as filehandle:
         training_errors = pickle.load(filehandle)
+    print("resuming training from epoch {}".format(len(training_errors)))
 
 # get data loaders
 train_loader = get_data_loader(batch_size, is_train=True)
@@ -46,6 +47,9 @@ val_loader = get_data_loader(batch_size, is_train=False)
 
 
 for epoch in range(num_epochs):
+    # if resuming training, update epoch #
+    if(epoch==0 & args.c) :
+        epoch = len(training_errors) + 1
     model.train()
     train_loss=0
     for idx, (img, keypoints, weights) in enumerate(train_loader):
@@ -61,7 +65,7 @@ for epoch in range(num_epochs):
         optimizer.step()
         if (idx>=5) :
             break
-    print("epoch {0}/{1}".format(epoch,num_epochs))
+    print("epoch {0}/{1}".format(epoch+1,num_epochs))
     training_errors.append(train_loss/len(train_loader))
     print("avg. training loss : {}".format(training_errors[-1]))
     
