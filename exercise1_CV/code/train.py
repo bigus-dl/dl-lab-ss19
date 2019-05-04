@@ -52,6 +52,7 @@ for epoch in range(num_epochs):
     # if resuming training, update epoch #
     if(epoch==0 and args.c) :
         epoch = len(training_errors) + 1
+        print ("training error len : {}".format(len(training_errors)))
     model.train()
     train_loss=0
     for idx, (img, keypoints, weights) in enumerate(train_loader):
