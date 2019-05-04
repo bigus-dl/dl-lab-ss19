@@ -75,7 +75,8 @@ for epoch in range(1,num_epochs):
     training_errors.append(train_loss/len(train_loader))
     print("avg. training loss : {}".format(training_errors[-1]))
     
-    if (epoch+1) % 5 == 0: 
+    if epoch % 5 == 0: 
+        print("saving snapshopt @ epoch{}".format(epoch))
         with torch.no_grad():
             model.eval()
             val_loss = 0
