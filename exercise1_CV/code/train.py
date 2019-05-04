@@ -20,6 +20,7 @@ parser.add_argument("--c", action = "store_true", default = False)
 args = parser.parse_args()
 
 # cuda & model init
+print("initializing model, cuda ...")
 cuda = torch.device('cuda')
 model = ResNetModel(pretrained=False)
 model.to(cuda)
@@ -36,9 +37,9 @@ if(args.c):
     print("--c flag set")
     model.load_state_dict(torch.load(PATH))
     optimizer.load_state_dict(torch.load(OPATH))
-    with open('training.errors', 'rb') as filehandle:
+    with open('results/training.errors', 'rb') as filehandle:
         training_errors = pickle.load(filehandle)
-    with open('validation.errors', 'rb') as filehandle:
+    with open('results/validation.errors', 'rb') as filehandle:
         training_errors = pickle.load(filehandle)
     print("resuming training from epoch {}".format(len(training_errors)))
 
