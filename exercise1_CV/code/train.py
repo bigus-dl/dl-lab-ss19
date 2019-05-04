@@ -118,8 +118,6 @@ for epoch in range(1,args.num_epochs):
                         plot_keypoints(ax2, kp_pred[bid], vis[bid], img_size=img_np[bid].shape[:2], draw_limbs=True, draw_kp=True)
                         
                         plt.savefig("results/fig_id{}_epoch{}.png".format(bid,epoch))
-                        # save only 1 image for now
-                        break
                 if (idx>=5) :
                     break
             print("validation loss : {}, MPJPE : {} pixels".format(val_loss,mpjpe/len(val_loader)))
