@@ -37,7 +37,7 @@ mean_pixel_errors = np.array(mean_pixel_errors)
 print("MPJPE : {}".format(mean_pixel_errors.shape))
 
 # correct val. errors
-validation_errors = validation_errors/2000
+validation_errors = validation_errors
 validation_errors=validation_errors.repeat(5)
 
 plt.figure()

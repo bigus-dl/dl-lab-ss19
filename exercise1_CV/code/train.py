@@ -79,8 +79,8 @@ for epoch in range(1,args.num_epochs):
         keypoints = keypoints.to(cuda)
         weights = weights.to(cuda)
         output = model(img,'')
-        loss = loss_fn(keypoints, output)*(weights.repeat_interleave(2).float())
-        loss = torch.mean(loss)
+        loss = loss_fn(output, keypoints)*(weights.repeat_interleave(2).float())
+        loss = torch.sum(loss)
         train_loss += loss.item()
         loss.backward()
         optimizer.step()
@@ -98,9 +98,10 @@ for epoch in range(1,args.num_epochs):
                 keypoints = keypoints.to(cuda)
                 weights = weights.to(cuda)
                 output = model(img, '')
-                loss = loss_fn(keypoints, output)*(weights.repeat_interleave(2).float())
-                mpjpe += torch.mean(torch.sqrt(loss)).item()
-                val_loss += torch.mean(loss).item()
+                loss = loss_fn(output, keypoints)*(weights.repeat_interleave(2).float())
+                visible = torch.sum(weights>0.5).item()
+                mpjpe += (torch.sum(torch.sqrt(loss))/visible).item()
+                val_loss += torch.sum(loss).item()
                 # saving predictions from batch 5 every 10 epochs
                 if(idx==args.figure_batch and epoch%args.figure_epoch==0) :
                     # normalize keypoints to [0, 1] range
@@ -129,7 +130,7 @@ for epoch in range(1,args.num_epochs):
             validation_errors.append(val_loss)
             mean_pixel_errors.append(mpjpe/len(val_loader))
             # add later : val_loss/len(val_loader)
-            print("validation loss : {}, MPJPE : {} pixels".format(val_loss ,mean_pixel_errors[-1]))
+            print("validation loss : {}, MPJPE : {} pixels".format(val_loss/len(val_loader) ,mean_pixel_errors[-1]))
 
         if args.save_snaps:
             print("saving snapshot @ epoch {}".format(epoch))
