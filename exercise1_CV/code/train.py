@@ -16,30 +16,33 @@ OPATH = "model/fuckyou.pth"
 
 epoch_shift = 0
 parser = argparse.ArgumentParser()
-parser.add_argument("--cont", action = "store_true", default = False)
+parser.add_argument("--cont", action = "store_true", dest="continute_training", default = False)
+parser.add_argument("--snap", action = "store_true", dest="save_snaps", default = True)
+parser.add_argument('-lr', type=float, dest="learning_rate", default=1e-4)
 parser.add_argument('-bsize', type=int, dest="batch_size", default=5)
 parser.add_argument('-fbatch', type=int, dest="figure_batch", default=5)
 parser.add_argument('-fepoch', type=int, dest="figure_epoch", default=10)
 parser.add_argument('-epochs', type=int, dest="num_epochs", default=2000)
 args = parser.parse_args()
 print("settings :\ncontinute flag: {}\t batch size: {}\t plot batch #: {}".format(args.cont,args.batch_size,args.figure_batch))
-print("plot every: {}\t number of epochs: {}".format(args.figure_epoch,args.num_epochs))
+print("plot every: {}\t\t number of epochs: {}".format(args.figure_epoch,args.num_epochs))
+print("learning rate: {}\t\t save snapshots:{}".format(args.learning_rate,args.save_snaps))
 # cuda & model init
 print("initializing model, cuda ...")
 cuda = torch.device('cuda')
 model = ResNetModel(pretrained=False)
 model.to(cuda)
 # training loop init
-optimizer = optim.Adam(model.parameters(), lr=1e-4)
+optimizer = optim.Adam(model.parameters(), lr=arg.learning_rate)
 # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=100)
 loss_fn = torch.nn.MSELoss(reduction='mean')
 
 train_loss = val_loss = 0
 training_errors = []
 validation_errors = []
-
+mean_pixel_errors = [] #MPJPE over epochs
 # if flag --c is set, continute training from a previous snapshot
-if(args.cont):
+if(args.continute_training):
     print("--c flag set")
     model.load_state_dict(torch.load(PATH))
     optimizer.load_state_dict(torch.load(OPATH))
@@ -47,6 +50,8 @@ if(args.cont):
         training_errors = pickle.load(filehandle)
     with open('results/validation.errors', 'rb') as filehandle:
         validation_errors = pickle.load(filehandle)
+    with open('results/pixel.errors', 'rb') as filehandle:
+        mean_pixel_errors = pickle.load(filehandle)
     epoch_shift = len(training_errors) + 1
     print("resuming training from epoch {}".format(epoch_shift))
 
@@ -59,7 +64,7 @@ val_loader = get_data_loader(args.batch_size, is_train=False)
 
 for epoch in range(1,args.num_epochs):
     # if resuming training, update epoch #
-    if(epoch<epoch_shift and args.cont) :
+    if(epoch<epoch_shift and args.continute_training) :
         continue
     model.train()
     train_loss=0
@@ -118,15 +123,19 @@ for epoch in range(1,args.num_epochs):
                         # save only 1 figure
                         break
 
-            print("validation loss : {}, MPJPE : {} pixels".format(val_loss,mpjpe/len(val_loader)))
             validation_errors.append(val_loss)
+            mean_pixel_errors.append(mpjpe/len(val_loader))
+            print("validation loss : {}, MPJPE : {} pixels".format(val_loss'''/len(val_loader)''' ,mean_pixel_errors[-1]))
 
-        print("saving snapshot @ epoch {}".format(epoch))
-        # save model state
-        torch.save(model.state_dict(), PATH)
-        torch.save(optimizer.state_dict(), OPATH)
-        # store training/validation loss as binary data stream
-        with open('results/training.errors', 'wb') as filehandle:  
-            pickle.dump(training_errors, filehandle)
-        with open('results/validation.errors', 'wb') as filehandle:  
-            pickle.dump(validation_errors, filehandle)
+        if args.save_snaps:
+            print("saving snapshot @ epoch {}".format(epoch))
+            # save model state
+            torch.save(model.state_dict(), PATH)
+            torch.save(optimizer.state_dict(), OPATH)
+            # store training/validation loss as binary data stream
+            with open('results/training.errors', 'wb') as filehandle:  
+                pickle.dump(training_errors, filehandle)
+            with open('results/validation.errors', 'wb') as filehandle:  
+                pickle.dump(validation_errors, filehandle)
+            with open('results/pixel.errors', 'wb') as filehandle:  
+                pickle.dump(mean_pixel_errors, filehandle)
