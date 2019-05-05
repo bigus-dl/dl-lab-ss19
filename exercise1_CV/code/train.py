@@ -17,7 +17,7 @@ OPATH = "model/fuckyou.pth"
 epoch_shift = 0
 parser = argparse.ArgumentParser()
 parser.add_argument("--cont", action = "store_true", dest="continute_training", default = False)
-parser.add_argument("--snap", action = "store_true", dest="save_snaps", default = True)
+parser.add_argument("--snap", action = "store_true", dest="save_snaps", default = False)
 parser.add_argument('-lr', type=float, dest="learning_rate", default=1e-4)
 parser.add_argument('-bsize', type=int, dest="batch_size", default=5)
 parser.add_argument('-fbatch', type=int, dest="figure_batch", default=5)
@@ -120,8 +120,6 @@ for epoch in range(1,args.num_epochs):
                         ax2.imshow(img_np[bid]), ax2.axis('off'), ax2.set_title('input + pred')
                         plot_keypoints(ax2, kp_pred[bid], vis[bid], img_size=img_np[bid].shape[:2], draw_limbs=True, draw_kp=True)
                         plt.savefig("results/fig_id{}_epoch{}.png".format(bid,epoch))
-                        # save only 1 figure
-                        break
 
             validation_errors.append(val_loss)
             mean_pixel_errors.append(mpjpe/len(val_loader))
