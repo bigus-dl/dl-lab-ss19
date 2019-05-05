@@ -34,7 +34,7 @@ except FileNotFoundError:
 
 training_errors = np.array(training_errors)
 print("training error : {}".format(training_errors.shape))
-validation_errors = np.array(validation_errors)/2000
+validation_errors = np.array(validation_errors)
 print("validation error : {}".format(validation_errors.shape))
 mean_pixel_errors = np.array(mean_pixel_errors).repeat(5)
 print("MPJPE : {}".format(mean_pixel_errors.shape))
