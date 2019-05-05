@@ -125,11 +125,14 @@ for epoch in range(1,args.num_epochs):
                         ax2.imshow(img_np[bid]), ax2.axis('off'), ax2.set_title('input + pred')
                         plot_keypoints(ax2, kp_pred[bid], vis[bid], img_size=img_np[bid].shape[:2], draw_limbs=True, draw_kp=True)
                         plt.savefig("results/fig_id{}_epoch{}.png".format(bid,epoch))
+                        plt.clf()
+                        plt.close()
+                    plt.close('all')
 
-            validation_errors.append(val_loss)
+            validation_errors.append(val_loss/val_loader)
             mean_pixel_errors.append(mpjpe/len(val_loader))
             # add later : val_loss/len(val_loader)
-            print("validation loss : {}, MPJPE : {} pixels".format(val_loss/len(val_loader) ,mean_pixel_errors[-1]))
+            print("validation loss : {}, MPJPE : {} pixels".format(validation_errors[-1] ,mean_pixel_errors[-1]))
 
         if args.save_snaps:
             print("saving snapshot @ epoch {}".format(epoch))
