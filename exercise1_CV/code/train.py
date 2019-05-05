@@ -129,7 +129,7 @@ for epoch in range(1,args.num_epochs):
                         plt.close()
                     plt.close('all')
 
-            validation_errors.append(val_loss/val_loader)
+            validation_errors.append(val_loss/len(val_loader))
             mean_pixel_errors.append(mpjpe/len(val_loader))
             # add later : val_loss/len(val_loader)
             print("validation loss : {}, MPJPE : {} pixels".format(validation_errors[-1] ,mean_pixel_errors[-1]))
