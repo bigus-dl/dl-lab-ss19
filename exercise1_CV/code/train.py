@@ -44,14 +44,18 @@ mean_pixel_errors = [] #MPJPE over epochs
 # if flag --c is set, continute training from a previous snapshot
 if(args.continute_training):
     print("--c flag set")
-    model.load_state_dict(torch.load(PATH))
-    optimizer.load_state_dict(torch.load(OPATH))
-    with open('results/training.errors', 'rb') as filehandle:
-        training_errors = pickle.load(filehandle)
-    with open('results/validation.errors', 'rb') as filehandle:
-        validation_errors = pickle.load(filehandle)
-    with open('results/pixel.errors', 'rb') as filehandle:
-        mean_pixel_errors = pickle.load(filehandle)
+    try:
+        model.load_state_dict(torch.load(PATH))
+        optimizer.load_state_dict(torch.load(OPATH))
+        with open('results/training.errors', 'rb') as filehandle:
+            training_errors = pickle.load(filehandle)
+        with open('results/validation.errors', 'rb') as filehandle:
+            validation_errors = pickle.load(filehandle)
+        with open('results/pixel.errors', 'rb') as filehandle:
+            mean_pixel_errors = pickle.load(filehandle)
+    except FileNotFoundError:
+        print("snapshot file(s) not found")
+
     epoch_shift = len(training_errors) + 1
     print("resuming training from epoch {}".format(epoch_shift))
 
@@ -61,7 +65,6 @@ if(args.continute_training):
 train_loader = get_data_loader(args.batch_size, is_train=True)
 val_loader = get_data_loader(args.batch_size, is_train=False)
 print("val loader :")
-print(len(val_loader))
 
 print("training ...")
 for epoch in range(1,args.num_epochs):
