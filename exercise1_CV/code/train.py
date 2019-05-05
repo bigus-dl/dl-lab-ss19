@@ -64,7 +64,6 @@ if(args.continute_training):
 # get data loaders
 train_loader = get_data_loader(args.batch_size, is_train=True)
 val_loader = get_data_loader(args.batch_size, is_train=False)
-print("val loader :")
 
 print("training ...")
 for epoch in range(1,args.num_epochs):
