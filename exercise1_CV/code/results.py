@@ -45,7 +45,7 @@ validation_errors=validation_errors.repeat(5)
 
 plt.figure()
 plt.plot(training_errors, label='training')
-#plt.plot(validation_errors, label='validation')
+plt.plot(validation_errors, label='validation')
 plt.ylabel('loss')
 plt.xlabel('epochs')
 plt.title('HPE')
