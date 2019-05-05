@@ -24,7 +24,7 @@ parser.add_argument('-fbatch', type=int, dest="figure_batch", default=5)
 parser.add_argument('-fepoch', type=int, dest="figure_epoch", default=10)
 parser.add_argument('-epochs', type=int, dest="num_epochs", default=2000)
 args = parser.parse_args()
-print("settings :\ncontinute flag: {}\t batch size: {}\t plot batch #: {}".format(args.cont,args.batch_size,args.figure_batch))
+print("settings :\ncontinute flag: {}\t batch size: {}\t plot batch #: {}".format(args.continute_training,args.batch_size,args.figure_batch))
 print("plot every: {}\t\t number of epochs: {}".format(args.figure_epoch,args.num_epochs))
 print("learning rate: {}\t\t save snapshots:{}".format(args.learning_rate,args.save_snaps))
 # cuda & model init
@@ -33,7 +33,7 @@ cuda = torch.device('cuda')
 model = ResNetModel(pretrained=False)
 model.to(cuda)
 # training loop init
-optimizer = optim.Adam(model.parameters(), lr=arg.learning_rate)
+optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
 # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=100)
 loss_fn = torch.nn.MSELoss(reduction='mean')
 
@@ -60,8 +60,10 @@ if(args.continute_training):
 # get data loaders
 train_loader = get_data_loader(args.batch_size, is_train=True)
 val_loader = get_data_loader(args.batch_size, is_train=False)
+print("val loader :")
+print(len(val_loader))
 
-
+print("training ...")
 for epoch in range(1,args.num_epochs):
     # if resuming training, update epoch #
     if(epoch<epoch_shift and args.continute_training) :
@@ -123,7 +125,8 @@ for epoch in range(1,args.num_epochs):
 
             validation_errors.append(val_loss)
             mean_pixel_errors.append(mpjpe/len(val_loader))
-            print("validation loss : {}, MPJPE : {} pixels".format(val_loss'''/len(val_loader)''' ,mean_pixel_errors[-1]))
+            # add later : val_loss/len(val_loader)
+            print("validation loss : {}, MPJPE : {} pixels".format(val_loss ,mean_pixel_errors[-1]))
 
         if args.save_snaps:
             print("saving snapshot @ epoch {}".format(epoch))
