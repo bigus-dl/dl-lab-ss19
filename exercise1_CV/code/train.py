@@ -35,7 +35,7 @@ model.to(cuda)
 # training loop init
 optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
 # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=100)
-loss_fn = torch.nn.MSELoss(reduction='mean')
+loss_fn = torch.nn.MSELoss(reduction='none')
 
 train_loss = val_loss = 0
 training_errors = []
