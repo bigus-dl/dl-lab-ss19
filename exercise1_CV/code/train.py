@@ -78,6 +78,7 @@ for epoch in range(1,args.num_epochs):
         keypoints = keypoints.to(cuda)
         weights = weights.to(cuda)
         output = model(img,'')
+        print((weights.repeat_interleave(2).float()).shape)
         loss = loss_fn(output, keypoints)*(weights.repeat_interleave(2).float())
         loss = torch.sum(loss)
         train_loss += loss.item()
