@@ -99,7 +99,7 @@ for epoch in range(1,args.num_epochs):
                 keypoints = keypoints.to(cuda)
                 weights = weights.to(cuda)
                 output = model(img, '')
-                loss = loss_fn(output, keypoints)*(weights.repeat_interleave(2).float())
+                loss = loss_fn(output, keypoints)*(weights.repeat_interleave(2,dim=1).float())
                 visible = torch.sum(weights>0.5).item()
                 mpjpe += (torch.sum(torch.sqrt(loss))/visible).item()
                 val_loss += torch.sum(loss).item()
