@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import torch
 import os
 import pickle
+import argparse
 
 from model.model import ResNetModel
 from model.data import get_data_loader
@@ -13,12 +14,21 @@ from run_forward import normalize_keypoints
 PATH = "results/fuckme.pth"
 OPATH = "results/fuckyou.pth"
 
+parser = argparse.ArgumentParser()
+parser.add_argument("-m", action = "store_true", dest="pull_model", default = False)
+parser.add_argument("-s", action = "store_true", dest="pull_samples", default = False)
+args = parser.parse_args()
+
 training_errors = []
 validation_errors = []
 mean_pixel_errors = []
 
-os.system("DEL /F/Q/S results\*.*")
-os.system("scp bahadorm@login1.informatik.uni-freiburg.de:~/Dokumente/dl-lab-ss19/exercise1_CV/code/results/*.* results/")
+os.system("scp bahadorm@login1.informatik.uni-freiburg.de:~/Dokumente/dl-lab-ss19/exercise1_CV/code/results/*.errors results/")
+if args.pull_samples:
+    os.system("DEL /F/Q/S results\*.*")
+    os.system("scp bahadorm@login1.informatik.uni-freiburg.de:~/Dokumente/dl-lab-ss19/exercise1_CV/code/results/*.png results/")
+if args.pull_model :
+    os.system("scp bahadorm@login1.informatik.uni-freiburg.de:~/Dokumente/dl-lab-ss19/exercise1_CV/code/model/*.pth results/")
 
 try:
     with open('results/training.errors', 'rb') as filehandle:
@@ -33,15 +43,12 @@ except FileNotFoundError:
 
 
 training_errors = np.array(training_errors)
-print("training error : {}".format(training_errors.shape))
-validation_errors = np.array(validation_errors)
-print("validation error : {}".format(validation_errors.shape))
+print("training error : {}\t last :{}".format(training_errors.shape,training_errors[-1]))
+validation_errors = np.array(validation_errors).repeat(5)
+print("validation error : {}\t last: {}".format(validation_errors.shape,validation_errors[-1]))
 mean_pixel_errors = np.array(mean_pixel_errors).repeat(5)
-print("MPJPE : {}".format(mean_pixel_errors.shape))
+print("MPJPE : {}\t last: {}".format(mean_pixel_errors.shape,mean_pixel_errors[-1]))
 
-# correct val. errors
-validation_errors = validation_errors
-validation_errors=validation_errors.repeat(5)
 
 plt.figure()
 plt.plot(training_errors, label='training')
