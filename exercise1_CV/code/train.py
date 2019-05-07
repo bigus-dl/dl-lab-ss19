@@ -22,11 +22,12 @@ parser.add_argument('-lr', type=float, dest="learning_rate", default=1e-4)
 parser.add_argument('-bsize', type=int, dest="batch_size", default=5)
 parser.add_argument('-fbatch', type=int, dest="figure_batch", default=5)
 parser.add_argument('-fepoch', type=int, dest="figure_epoch", default=10)
+parser.add_argument('-fmax', type=int, dest="max_plot", default=10)
 parser.add_argument('-epochs', type=int, dest="num_epochs", default=2000)
 args = parser.parse_args()
 print("settings :\ncontinute flag: {}\t batch size: {}\t plot batch #: {}".format(args.continute_training,args.batch_size,args.figure_batch))
 print("plot every {} epochs\t number of epochs: {}".format(args.figure_epoch,args.num_epochs))
-print("learning rate: {}\t save snapshots:{}".format(args.learning_rate,args.save_snaps))
+print("learning rate: {}\t save snapshots:{}\t maximum plot count: {}".format(args.learning_rate,args.save_snaps,args.max_plot))
 # cuda & model init
 print("initializing model, cuda ...")
 cuda = torch.device('cuda')
@@ -129,6 +130,9 @@ for epoch in range(1,args.num_epochs):
                         plt.savefig("results/fig_id{}_epoch{}.png".format(bid,epoch))
                         plt.clf()
                         plt.close()
+                        # to avoid plotting too much shit, default = 10
+                        if bid>=args.max_plot :
+                            break
                     plt.close('all')
 
             validation_errors.append(val_loss/len(val_loader))
