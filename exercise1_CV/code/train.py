@@ -90,6 +90,7 @@ for epoch in range(1,args.num_epochs):
         #print((weights.repeat_interleave(2,dim=1).float()).shape)
         loss = loss_fn(output, keypoints)
         loss = loss * (weights.repeat_interleave(2,dim=1).float())
+        visible = torch.sum(weights>0.5).item()
         mpjpe += (torch.sum(torch.sqrt(loss))/visible).item()
         loss = torch.sum(loss)
         train_loss += loss.item()
