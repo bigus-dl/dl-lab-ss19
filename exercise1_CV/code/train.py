@@ -27,9 +27,9 @@ parser.add_argument('-epeval', type=int, dest="epoch_eval", default=2, help='eva
 parser.add_argument('-epochs', type=int, dest="num_epochs", default=2000, help='number of epochs')
 args = parser.parse_args()
 print("settings :\ncontinute flag: {}\t batch size: {}\t plot batch #: {}".format(args.continute_training,args.batch_size,args.figure_batch))
-print("plot every {} epochs\t number of epochs: {}".format(args.figure_epoch,args.num_epochs))
+print("plot every {} epochs\t number of epochs: {}\t evaluate every {} epochs".format(args.figure_epoch,args.num_epochs,args.epoch_eval))
 print("learning rate: {}\t save snapshots:{}\t maximum plot count: {}".format(args.learning_rate,args.save_snaps,args.max_plot))
-print("evaluate every {} epochs".format(args.epoch_eval))
+
 # cuda & model init
 print("initializing model, cuda ...")
 cuda = torch.device('cuda')
