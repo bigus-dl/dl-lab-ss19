@@ -21,7 +21,8 @@ args = parser.parse_args()
 
 training_errors = []
 validation_errors = []
-mean_pixel_errors = []
+mean_pixel_errors_val = []
+mean_pixel_errors_train = []
 
 os.system("scp bahadorm@login1.informatik.uni-freiburg.de:~/Dokumente/dl-lab-ss19/exercise1_CV/code/results/*.errors results/")
 if args.pull_samples:
@@ -35,20 +36,22 @@ try:
         training_errors = pickle.load(filehandle)
     with open('results/validation.errors', 'rb') as filehandle:
         validation_errors = pickle.load(filehandle)
-    with open('results/pixel.errors', 'rb') as filehandle:
-        mean_pixel_errors = pickle.load(filehandle)
+    with open('results/training_pixel.errors', 'rb') as filehandle:
+        mean_pixel_errors_train = pickle.load(filehandle)
+    with open('results/validation_pixel.errors', 'rb') as filehandle:
+        mean_pixel_errors_val = pickle.load(filehandle
 except FileNotFoundError:
     print("error file(s) not found")
 
 
-
+epoch_eval = len(training_errors)/len(validation_errors)
 training_errors = np.array(training_errors)
 print("training error : {}\t last :{}".format(training_errors.shape,training_errors[-1]))
-validation_errors = np.array(validation_errors).repeat(5)
+validation_errors = np.array(validation_errors).repeat(epoch_eval)
 print("validation error : {}\t last: {}".format(validation_errors.shape,validation_errors[-1]))
-mean_pixel_errors = np.array(mean_pixel_errors).repeat(5)
+mean_pixel_errors_val = np.array(mean_pixel_errors).repeat(epoch_eval)
 print("MPJPE : {}\t last: {}".format(mean_pixel_errors.shape,mean_pixel_errors[-1]))
-
+mean_pixel_errors_train = np.array(mean_pixel_errors_train)
 
 plt.figure()
 plt.plot(training_errors, label='training')
@@ -60,8 +63,9 @@ plt.legend()
 plt.show()
 
 plt.figure()
-plt.plot(mean_pixel_errors, label='MPJPE')
-plt.ylabel('loss')
+plt.plot(mean_pixel_errors_train, label='train.')
+plt.plot(mean_pixel_errors_val, label='valid.')
+plt.ylabel('mean pixel loss')
 plt.xlabel('epochs')
 plt.title('MPJPE')
 plt.legend()
