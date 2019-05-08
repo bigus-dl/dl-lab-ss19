@@ -99,7 +99,7 @@ for epoch in range(1,args.num_epochs):
     
     training_errors.append(train_loss/len(train_loader))
     mean_pixel_errors_train.append(mpjpe/len(train_loader))
-    print("epoch {}/{} : avg. training loss = {}".format(epoch,args.num_epochs,training_errors[-1]))
+    print("epoch {}/{} : avg. training loss = {}, MPJPE: {}".format(epoch,args.num_epochs,training_errors[-1],mean_pixel_errors_train[-1]))
     
     # it's time for evaluation  
     if epoch % args.epoch_eval == 0: 
