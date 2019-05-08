@@ -1,14 +1,14 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import torch
+# import torch
 import os
 import pickle
 import argparse
 
-from model.model import ResNetModel
-from model.data import get_data_loader
-from utils.plot_util import plot_keypoints
-from run_forward import normalize_keypoints
+# from model.model import ResNetModel
+# from model.data import get_data_loader
+# from utils.plot_util import plot_keypoints
+# from run_forward import normalize_keypoints
 
 
 PATH = "results/fuckme.pth"
