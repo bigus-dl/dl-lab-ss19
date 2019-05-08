@@ -24,12 +24,12 @@ validation_errors = []
 mean_pixel_errors_val = []
 mean_pixel_errors_train = []
 
-os.system("scp bahadorm@login1.informatik.uni-freiburg.de:~/Dokumente/dl-lab-ss19/exercise1_CV/code/results/*.errors results/")
 if args.pull_samples:
     os.system("DEL /F/Q/S results\*.*")
     os.system("scp bahadorm@login1.informatik.uni-freiburg.de:~/Dokumente/dl-lab-ss19/exercise1_CV/code/results/*.png results/")
 if args.pull_model :
     os.system("scp bahadorm@login1.informatik.uni-freiburg.de:~/Dokumente/dl-lab-ss19/exercise1_CV/code/model/*.pth results/")
+os.system("scp bahadorm@login1.informatik.uni-freiburg.de:~/Dokumente/dl-lab-ss19/exercise1_CV/code/results/*.errors results/")
 
 try:
     with open('results/training.errors', 'rb') as filehandle:
