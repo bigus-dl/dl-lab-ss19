@@ -39,7 +39,7 @@ try:
     with open('results/training_pixel.errors', 'rb') as filehandle:
         mean_pixel_errors_train = pickle.load(filehandle)
     with open('results/validation_pixel.errors', 'rb') as filehandle:
-        mean_pixel_errors_val = pickle.load(filehandle
+        mean_pixel_errors_val = pickle.load(filehandle)
 except FileNotFoundError:
     print("error file(s) not found")
 
@@ -49,8 +49,8 @@ training_errors = np.array(training_errors)
 print("training error : {}\t last :{}".format(training_errors.shape,training_errors[-1]))
 validation_errors = np.array(validation_errors).repeat(epoch_eval)
 print("validation error : {}\t last: {}".format(validation_errors.shape,validation_errors[-1]))
-mean_pixel_errors_val = np.array(mean_pixel_errors).repeat(epoch_eval)
-print("MPJPE : {}\t last: {}".format(mean_pixel_errors.shape,mean_pixel_errors[-1]))
+mean_pixel_errors_val = np.array(mean_pixel_errors_val).repeat(epoch_eval)
+print("MPJPE : {}\t last: {}".format(mean_pixel_errors_val.shape,mean_pixel_errors_val[-1]))
 mean_pixel_errors_train = np.array(mean_pixel_errors_train)
 
 plt.figure()
