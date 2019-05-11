@@ -98,7 +98,7 @@ for epoch in range(1,args.num_epochs):
         diff = ((output - keypoints)**2).sum(-1)
         print("diff : {}".format(diff.shape))
         print("wieghts : {}".format(weights.shape))
-        loss = (diff.view(-1,1) * weights).sum(-1)/ weights.sum(-1)
+        loss = (diff.view(-1,1) * weights.float()).sum(-1)/ weights.sum(-1).float()
         print("loss : {}".format(loss.shape))
         loss = torch.mean(loss)
         print("lOss : {}".format(loss.shape))
