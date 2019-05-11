@@ -94,9 +94,13 @@ for epoch in range(1,args.num_epochs):
         loss = torch.sum(loss)
         train_loss += loss.item()
         '''
+        print("output : {}".format(output.shape))
         diff = ((output -keypoints)**2).sum(-1)
+        print("diff : {}".format(diff.shape))
         loss = (weights*diff).sum(-1)/weights.sum(-1)
+        print("loss : {}".format(loss.shape))
         loss = torch.mean(loss)
+        print("lOss : {}".format(loss.shape))
         train_loss = loss.item()
         loss.backward()
         optimizer.step()
