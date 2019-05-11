@@ -86,14 +86,18 @@ for epoch in range(1,args.num_epochs):
         keypoints = keypoints.to(cuda)
         weights = weights.to(cuda)
         output = model(img,'')
-        #print(weights.shape)
-        #print((weights.repeat_interleave(2,dim=1).float()).shape)
+        '''
         loss = loss_fn(output, keypoints)
         loss = loss * (weights.repeat_interleave(2,dim=1).float())
         visible = torch.sum(weights>0.5).item()
         mpjpe += (torch.sum(torch.sqrt(loss))/visible).item()
         loss = torch.sum(loss)
         train_loss += loss.item()
+        '''
+        diff = ((output -keypoints)**2).sum(-1)
+        loss = (weights*diff).sum(-1)/weights.sum(-1)
+        loss = torch.mean(loss)
+        train_loss = loss.item()
         loss.backward()
         optimizer.step()
     
@@ -101,7 +105,7 @@ for epoch in range(1,args.num_epochs):
     mean_pixel_errors_train.append(mpjpe/len(train_loader))
     print("epoch {}/{} : avg. training loss = {}, MPJPE: {}".format(epoch,args.num_epochs,training_errors[-1],mean_pixel_errors_train[-1]))
     
-    # it's time for evaluation  
+    # it's time for evaluation, evaluate every $args.epoch_eval epochs
     if epoch % args.epoch_eval == 0: 
         with torch.no_grad():
             model.eval()
