@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import torch.optim as optim
 import torch
 
-from model.model import ResNetModel
+from model.model import ResNetModel_S
 from model.data import get_data_loader
 from utils.plot_util import plot_keypoints
 from run_forward import normalize_keypoints
@@ -13,15 +13,6 @@ import pickle
 
 PATH = "model/fuckme.pth"
 OPATH = "model/fuckyou.pth"
-
-def loss_fct(est, gt, weights):
-    est = est.view(-1, 17, 2)
-    gt = gt.view(-1, 17, 2)
-    weights = weights.type(torch.cuda.FloatTensor)
-    loss = torch.mul(weights, ((est[:,:,0]-gt[:,:,0]).pow(2) + (est[:,:,1]-gt[:,:,1]).pow(2)))
-    mpe = loss
-    loss = torch.div(loss.sum(-1), weights.sum(-1))
-    return mpe, loss.mean()
 
 epoch_shift = 0
 parser = argparse.ArgumentParser()
@@ -42,12 +33,13 @@ print("learning rate: {}\t save snapshots:{}\t maximum plot count: {}".format(ar
 # cuda & model init
 print("initializing model, cuda ...")
 cuda = torch.device('cuda')
-model = ResNetModel(pretrained=True)
+model = ResNetModel_S(pretrained=False)
 model.to(cuda)
 
 # training loop init
 optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
 # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=100)
+loss_fn = torch.nn.MSELoss(reduction='none')
 train_loss = val_loss = 0
 training_errors = []
 validation_errors = []
@@ -89,19 +81,21 @@ for epoch in range(1,args.num_epochs):
         optimizer.zero_grad()
         img = img.to(cuda)
         keypoints = keypoints.to(cuda)
-        #since keypoints are normalized, mpjpe has to be updated
-        multiplier = img.shape[3]
-        keypoints = normalize_keypoints(keypoints, img.shape)
         weights = weights.to(cuda)
-        output = model(img,'')
+        output, _ = model(img,'')
         
-        pe_tensor, loss = loss_fct(output, keypoints,weights)
+        loss = loss_fn(output, keypoints).view(-1, 17, 2)
+        #print(loss.shape)
+        loss = loss * weights.float().unsqueeze(2)
         # MPJPE per batch
+        pe_tensor = loss[:,:,0]+loss[:,:,1]
+        pe_tensor = pe_tensor.squeeze() 
         visible = weights.sum(dim=1).float()
-        pe_tensor = torch.sqrt(pe_tensor)*multiplier
+        pe_tensor = torch.sqrt(pe_tensor)
         pe_tensor = pe_tensor.sum(dim=1)
         pe_tensor = pe_tensor/visible
         mpjpe += (pe_tensor.sum()/args.batch_size).item()
+        loss= loss.mean()
         train_loss += loss.item()
         loss.backward()
         optimizer.step()
@@ -119,26 +113,28 @@ for epoch in range(1,args.num_epochs):
             for idx, (img, keypoints, weights) in enumerate(val_loader):
                 img = img.to(cuda)
                 keypoints = keypoints.to(cuda)
-                multiplier = img.shape[3]
-                keypoints = normalize_keypoints(keypoints, img.shape)
                 weights = weights.to(cuda)
-                output = model(img, '')
-
-                pe_tensor, loss = loss_fct(output, keypoints, weights)
+                output, heatmap = model(img, '')
+                loss = loss_fn(output, keypoints).view(-1, 17, 2)
+                #print(loss.shape)
+                loss = loss * weights.float().unsqueeze(2)
                 # MPJPE per batch
                 visible = weights.sum(dim=1).float()
-                pe_tensor = torch.sqrt(pe_tensor)*multiplier
+                pe_tensor = loss[:,:,0]+loss[:,:,1]
+                pe_tensor = torch.sqrt(pe_tensor)
                 pe_tensor = pe_tensor.sum(dim=1)
                 pe_tensor = pe_tensor/visible
                 mpjpe += (pe_tensor.sum()/args.batch_size).item()
                 val_loss += torch.mean(loss).item()
                 # saving predictions from batch $args.figure_batch every $figure_epoch epochs
                 if(idx==args.figure_batch and epoch%args.figure_epoch==0) :
-                    # normalize keypoints to [0, 1] range
-                    # keypoints = normalize_keypoints(keypoints, img.shape)
                     # apply model
                     pred = model(img, '')
-                    # pred = normalize_keypoints(pred, img.shape)
+                    # save heatmap
+                    plt.figure()
+                    plt.imshow(heatmap)
+                    plt.savefig("results/fig_id{}_epoch{}_heatmap.png".format(bid,epoch))
+                    plt.close()
                     # show results
                     img_np = np.transpose(img.cpu().detach().numpy(), [0, 2, 3, 1])
                     img_np = np.round((img_np + 1.0) * 127.5).astype(np.uint8)
