@@ -38,9 +38,9 @@ class CNN(nn.Module):
 
         x = self.conv3(x)
         x = self.pool3(x)
-        print("before " + x.shape)
+        print("before ", x.shape)
         x = x.view(x.size[0],-1)
-        print("after " + x.shape)
+        print("after ", x.shape)
 
         x = self.fc1(x)
         x = self.fc2(x)
