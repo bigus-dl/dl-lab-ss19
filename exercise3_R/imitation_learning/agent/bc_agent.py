@@ -18,6 +18,7 @@ class BCAgent:
         self.net.train()
         self.optimizer.zero_grad()
         y_hat  = self.net(X_batch)
+        print("y_hat {} , y_batch {}".format(y_hat,y_batch))
         loss = self.loss_fn(y_hat,y_batch)
         loss.backward()
         self.optimizer.step()
