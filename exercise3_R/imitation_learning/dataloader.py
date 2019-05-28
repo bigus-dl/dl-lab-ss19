@@ -6,6 +6,7 @@ import gzip
 from PIL import Image
 from imitation_learning.utils import *
 import torch.utils.data
+
 PKG_NAME = "data.pkl.gzip"
 
 class PickleReader(torch.utils.data.Dataset):
@@ -47,7 +48,7 @@ class PickleReader(torch.utils.data.Dataset):
 
         # preprocess data
         label = action_to_id(label)
-        label = torch.from_numpy(label)
+        label = torch.Tensor(label)
         sample = rgb2gray(sample)
         sample = torch.from_numpy(sample)
         sample.transpose
