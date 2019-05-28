@@ -33,7 +33,7 @@ class PickleReader(torch.utils.data.Dataset):
         else :
             self.X, self.y = X[int((1-frac) * self.n_samples):], y[int((1-frac) * self.n_samples):]
 
-        del X,y
+        del X,y,data
         print("X shape {}".format(self.X.shape))
         print("y shape {}".format(self.y.shape))
         print("y len {}".format(len(self.y)))
