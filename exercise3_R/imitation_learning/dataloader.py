@@ -9,7 +9,7 @@ from imitation_learning.utils import *
 
 PKG_NAME = "data.pkl.gzip"
 
-class PickleReader:
+class PickleReader(torch.utils.data.Dataset):
     def __init__(self, datasets_dir, frac=0.1, single_sample=False, is_train=True):
         
         print("decompressing data...")
@@ -34,6 +34,8 @@ class PickleReader:
             self.X, self.y = X[int((1-frac) * self.n_samples):], y[int((1-frac) * self.n_samples):]
 
         del X,y
+        print("X shape {}".format(X.shape))
+        print("y shape {}".format(X.shape))
         self.single_sample = single_sample
 
     def __getitem__(self, idx):
