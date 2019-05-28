@@ -1,5 +1,4 @@
 import torch
-from torchvision import transforms
 import pickle
 import numpy as np
 import os
@@ -22,7 +21,7 @@ class PickleReader(torch.utils.data.Dataset):
         self.is_train = is_train
 
         # get images as features and actions as targets
-        X = np.array(data["state"]).astype('float32')
+        X = np.array(data["state"]).astype('uint8')
         y = np.array(data["action"]).astype('float32')
 
         # get training or validation set depending on is_train
