@@ -105,6 +105,6 @@ for epoch in range(1,args.num_epochs):
             eval_dict['train_loss'] = loss_t/10
             eval_dict['val_loss'] = loss_v
             loss_t = loss_v =0
-            tensorboard_eval.write_episode_data(idx, eval_dict)
+            tensorboard_eval.write_episode_data(epoch*len(train_loader)+idx, eval_dict)
             if args.save_snaps :
                 agent.save(snapshot_dir)
