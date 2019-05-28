@@ -15,8 +15,6 @@ from exercise3_R.imitation_learning.agent.bc_agent import BCAgent
 from exercise3_R.tensorboard_evaluation import Evaluation
 from exercise3_R.imitation_learning.dataloader import get_data_loader
 
-
-
 '''
 mini batch shit :
 def minibatched(data: np.ndarray, batch_size: int) -> List[np.ndarray]:
@@ -34,7 +32,6 @@ training loop :
         np.random.shuffle(ix)
         x_train_batched = minibatched(x_train[ix], batch_size)
         y_train_batched = minibatched(y_train[ix], batch_size)
-
 '''
 
 
@@ -85,7 +82,7 @@ if(args.continute_training):
         print("snapshot file(s) not found")
 
 print("starting tensorboard")
-tensorboard_eval = Evaluation(name="eval" ,store_dir=tensorboard_dir, stats= ['train_loss', 'val_loss','epoch_loss'])
+tensorboard_eval = Evaluation(name="eval" ,store_dir=tensorboard_dir, stats= ['train_loss', 'val_loss'])
 
 
 print("training ...")
@@ -105,7 +102,7 @@ for epoch in range(1,args.num_epochs):
             X_batch_val = X_batch_val.to(cuda)
             loss_v = agent.validate(X_batch_val,y_batch_val)
             eval_dict = dict()
-            eval_dict['train_loss'] = loss_t
+            eval_dict['train_loss'] = loss_t/10
             eval_dict['val_loss'] = loss_v
             loss_t = loss_v =0
             tensorboard_eval.write_episode_data(idx, eval_dict)
