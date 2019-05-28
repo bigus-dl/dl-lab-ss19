@@ -1,6 +1,4 @@
 import sys
-sys.path.append("../") 
-
 import pickle
 import numpy as np
 import os
@@ -9,9 +7,9 @@ import argparse
 import pickle
 import torch._C as torch
 
-from ..agent.bc_agent import BCAgent
-from exercise3_R.tensorboard_evaluation import Evaluation
-from dataloader import get_data_loader
+from imitation_learning.agent.bc_agent import BCAgent
+from imitation_learning.dataloader import get_data_loader
+from tensorboard_evaluation import Evaluation
 
 '''
 mini batch shit :
