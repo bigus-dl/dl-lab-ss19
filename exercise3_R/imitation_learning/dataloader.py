@@ -48,7 +48,7 @@ class PickleReader(torch.utils.data.Dataset):
         label = torch.LongTensor([label])
         sample = rgb2gray(sample)
         sample = sample/255
-        print(sample))
+        print(sample)
         sample = sample[np.newaxis,:,:]
         sample = torch.from_numpy(sample)
 
