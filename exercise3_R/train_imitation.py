@@ -5,7 +5,7 @@ import os
 import matplotlib.pyplot as plt
 import argparse
 import pickle
-import torch._C as torch
+import torch
 
 from imitation_learning.agent.bc_agent import BCAgent
 from imitation_learning.dataloader import get_data_loader

@@ -1,4 +1,4 @@
-import torch._C as torch
+import torch
 from torchvision import transforms
 import pickle
 import numpy as np
@@ -9,11 +9,11 @@ from imitation_learning.utils import *
 
 PKG_NAME = "data.pkl.gzip"
 
-
 class PickleReader:
     def __init__(self, datasets_dir, frac=0.1, single_sample=False, is_train=True):
         
         print("decompressing data...")
+
         data_file = os.path.join(datasets_dir, PKG_NAME)
   
         f = gzip.open(data_file,'rb')

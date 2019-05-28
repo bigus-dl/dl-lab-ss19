@@ -1,6 +1,6 @@
 import sys
 
-import torch._C as torch
+import torch
 import torch.optim as optim
 from imitation_learning.agent.networks import CNN
 
