@@ -34,8 +34,8 @@ class PickleReader(torch.utils.data.Dataset):
             self.X, self.y = X[int((1-frac) * self.n_samples):], y[int((1-frac) * self.n_samples):]
 
         del X,y
-        print("X shape {}".format(X.shape))
-        print("y shape {}".format(X.shape))
+        print("X shape {}".format(self.X.shape))
+        print("y shape {}".format(self.X.shape))
         self.single_sample = single_sample
 
     def __getitem__(self, idx):
