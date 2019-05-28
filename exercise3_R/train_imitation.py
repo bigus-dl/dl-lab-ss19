@@ -36,9 +36,9 @@ training loop :
 
     # train model (you can change the parameters!)
 
-datasets_dir = "./data"
-snapshot_dir = "./snaps/snap"
-tensorboard_dir="./tensorboard"
+datasets_dir = "./imitation_learning/data"
+snapshot_dir = "./imitation_learning/snaps/snap"
+tensorboard_dir="./imitation_learning/tensorboard"
 
 # arg pars
 parser = argparse.ArgumentParser()
