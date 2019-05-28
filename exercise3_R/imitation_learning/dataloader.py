@@ -33,6 +33,7 @@ class PickleReader:
         else :
             self.X, self.y = X[int((1-frac) * self.n_samples):], y[int((1-frac) * self.n_samples):]
 
+        del X,y
         self.single_sample = single_sample
 
     def __getitem__(self, idx):

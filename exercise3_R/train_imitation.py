@@ -64,8 +64,11 @@ train_loss = val_loss = 0
 # getting cuda, agent
 print("initializing agent, cuda ...")
 agent = BCAgent(learning_rate=args.learning_rate)
+print('1')
 cuda = torch.device('cuda')
+print('2')
 agent.net.to(cuda)
+print('3')
 
 #tensorboard --logdir=path/to/log-directory --port=6006
 
