@@ -36,6 +36,7 @@ class PickleReader(torch.utils.data.Dataset):
         del X,y
         print("X shape {}".format(self.X.shape))
         print("y shape {}".format(self.y.shape))
+        print("y len {}".format(len(self.y)))
         self.single_sample = single_sample
 
     def __getitem__(self, idx):
