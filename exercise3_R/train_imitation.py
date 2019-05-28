@@ -99,6 +99,10 @@ for epoch in range(1,args.num_epochs):
             X_batch_val, y_batch_val = next(val_iterator)
             y_batch_val = y_batch_val.to(cuda)
             X_batch_val = X_batch_val.to(cuda)
+
+            print("X_batch_val shape {}".format(X_batch_val.shape))
+            print("y_batch_val shape {}".format(y_batch_val.shape))
+            
             loss_v = agent.validate(X_batch_val,y_batch_val)
             eval_dict = dict()
             eval_dict['train_loss'] = loss_t/10
