@@ -95,7 +95,7 @@ for epoch in range(1,args.num_epochs):
         # one f/b pass
         loss_t = + agent.update(X_batch,y_batch)
 
-        if idx%10 ==0 :
+        if (idx+1)%10 ==0 :
             X_batch_val, y_batch_val = next(val_iterator)
             y_batch_val = y_batch_val.to(cuda)
             X_batch_val = X_batch_val.to(cuda)

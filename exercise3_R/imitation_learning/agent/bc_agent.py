@@ -34,7 +34,7 @@ class BCAgent:
     def validate(self, X_val,y_val):
         with torch.no_grad():
             y_hat = self.net(X_val)
-            loss = self.loss_fn(y_hat,y_val)
+            loss = self.loss_fn(y_hat,y_val.squeeze())
             return loss.item()
 
     def load(self, file_name):
