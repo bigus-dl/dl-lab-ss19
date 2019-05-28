@@ -35,22 +35,22 @@ class PickleReader(torch.utils.data.Dataset):
 
         del X,y
         print("X shape {}".format(self.X.shape))
-        print("y shape {}".format(self.X.shape))
+        print("y shape {}".format(self.y.shape))
         self.single_sample = single_sample
 
     def __getitem__(self, idx):
         if self.single_sample:
             idx = 666
         
-        label = self.y[idx]
-        sample = self.X[idx]
+        label = self.y[idx,:]
+        sample = self.X[idx,:]
 
         # preprocess data
         label = action_to_id(label)
         label = torch.from_numpy(label)
         sample = rgb2gray(sample)
         sample = torch.from_numpy(sample)
-        
+        sample.transpose
         return label, sample
         
 
