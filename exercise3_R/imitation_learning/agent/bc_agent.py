@@ -18,7 +18,6 @@ class BCAgent:
         self.net.train()
         self.optimizer.zero_grad()
         y_hat  = self.net(X_batch)
-        print("y_hat {} , y_batch {}".format(y_hat,y_batch))
         loss = self.loss_fn(y_hat, y_batch.squeeze())
         loss.backward()
         self.optimizer.step()
@@ -34,13 +33,13 @@ class BCAgent:
     def validate(self, X_val,y_val):
         with torch.no_grad():
             y_hat = self.net(X_val)
-            loss = self.loss_fn(y_hat,y_val.squeeze())
+            loss = self.loss_fn(y_hat, y_val.squeeze())
             return loss.item()
 
-    def load(self, file_name):
+    def save(self, file_name):
         torch.save(self.net.state_dict(), file_name+"_model")
         torch.save(self.optimizer.state_dict(), file_name+"_optimizer")
 
-    def save(self, file_name):
+    def load(self, file_name):
         self.net.load_state_dict(torch.load(file_name+"_model"))
         self.optimizer.load_state_dict(torch.load(file_name+"_optimizer"))
