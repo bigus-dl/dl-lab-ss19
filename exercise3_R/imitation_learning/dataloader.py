@@ -34,22 +34,14 @@ class PickleReader(torch.utils.data.Dataset):
             self.X, self.y = X[int((1-frac) * self.n_samples):], y[int((1-frac) * self.n_samples):]
 
         del X,y,data
-        print("X shape {}".format(self.X.shape))
-        print("y shape {}".format(self.y.shape))
-        print("y len {}".format(len(self.y)))
         self.single_sample = single_sample
 
     def __getitem__(self, idx):
         if self.single_sample:
             idx = 666
-        
 
         label = self.y[idx,:]
         sample = self.X[idx,:]
-
-        print("before preprocessing")
-        print("l shape : {}".format(label.shape))
-        print("s shape : {}".format(sample.shape))
 
         # preprocess data
         label = action_to_id(label)
@@ -59,9 +51,6 @@ class PickleReader(torch.utils.data.Dataset):
         sample = torch.from_numpy(sample)
 
         # TODO normalize
-        print("after preprocessing")
-        print("l shape : {}".format(label.shape))
-        print("s shape : {}".format(sample.shape))
         return label, sample
         
 
