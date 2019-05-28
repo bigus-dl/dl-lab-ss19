@@ -50,9 +50,10 @@ class PickleReader(torch.utils.data.Dataset):
         label = action_to_id(label)
         label = torch.Tensor(label)
         sample = rgb2gray(sample)
-        sample = sample.transpose(2,0,1)
+        sample = sample[np.newaxis,:,:]
         sample = torch.from_numpy(sample)
         sample = torch.transpose(sample)
+        # TODO normalize
         print("l shape : {}".format(label.shape))
         print("s shape : {}".format(sample.shape))
         return label, sample
