@@ -47,7 +47,7 @@ class PickleReader(torch.utils.data.Dataset):
         label = self.y[idx,:]
         sample = self.X[idx,:]
 
-        print("after preprocessing")
+        print("before preprocessing")
         print("l shape : {}".format(label.shape))
         print("s shape : {}".format(sample.shape))
 
