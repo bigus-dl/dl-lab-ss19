@@ -5,7 +5,7 @@ import os
 import gzip
 from PIL import Image
 from imitation_learning.utils import *
-
+import torch.utils.data
 PKG_NAME = "data.pkl.gzip"
 
 class PickleReader(torch.utils.data.Dataset):
