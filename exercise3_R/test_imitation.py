@@ -1,16 +1,13 @@
-from __future__ import print_function
-
-import sys
-sys.path.append("../") 
 
 from datetime import datetime
 import numpy as np
 import gym
 import os
 import json
+import torch
 
-from agent.bc_agent import BCAgent
-from utils import *
+from imitation_learning.agent.bc_agent import BCAgent
+from imitation_learning.utils import *
 
 
 def run_episode(env, agent, rendering=True, max_timesteps=1000):
@@ -26,7 +23,9 @@ def run_episode(env, agent, rendering=True, max_timesteps=1000):
     while True:
         
         # TODO: preprocess the state in the same way than in your preprocessing in train_agent.py
-        #    state = ...
+        state = rgb2gray(state)
+        state = state[np.newaxis,np.newaxis,:,:]
+        state = torch.from_numpy(state)
 
         
         # TODO: get the action from your agent! You need to transform the discretized actions to continuous
@@ -36,7 +35,12 @@ def run_episode(env, agent, rendering=True, max_timesteps=1000):
         #       - just in case your agent misses the first turn because it is too fast: you are allowed to clip the acceleration in test_agent.py
         #       - you can use the softmax output to calculate the amount of lateral acceleration
         # a = ...
-
+        a = agent.predict(state)
+        a = -a
+        
+        a = torch.nn.functional.softmax(a)
+        print("softmax output {}".format(a.detach().numpy()))
+        a = id_to_action(,max_speed=0.1)
         next_state, r, done, info = env.step(a)   
         episode_reward += r       
         state = next_state
@@ -59,8 +63,8 @@ if __name__ == "__main__":
     n_test_episodes = 15                  # number of episodes to test
 
     # TODO: load agent
-    # agent = BCAgent(...)
-    # agent.load("models/bc_agent.pt")
+    agent = BCAgent()
+    agent.load("./imitation_learning/snaps/snap")
 
     env = gym.make('CarRacing-v0').unwrapped
 
