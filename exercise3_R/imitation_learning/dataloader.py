@@ -5,7 +5,7 @@ import numpy as np
 import os
 import gzip
 from PIL import Image
-from exercise3_R.utils import *
+from imitation_learning.utils import *
 
 PKG_NAME = "data.pkl.gzip"
 

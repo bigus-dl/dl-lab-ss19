@@ -1,9 +1,8 @@
 import sys
 
-sys.path.append("../")
 import torch._C as torch
 import torch.optim as optim
-from exercise3_R.imitation_learning.agent.networks import CNN
+from imitation_learning.agent.networks import CNN
 
 class BCAgent:
     
