@@ -43,17 +43,23 @@ class PickleReader(torch.utils.data.Dataset):
         if self.single_sample:
             idx = 666
         
+
         label = self.y[idx,:]
         sample = self.X[idx,:]
 
+        print("after preprocessing")
+        print("l shape : {}".format(label.shape))
+        print("s shape : {}".format(sample.shape))
+
         # preprocess data
         label = action_to_id(label)
-        label = torch.Tensor(label)
+        label = torch.from_numpy(label)
         sample = rgb2gray(sample)
         sample = sample[np.newaxis,:,:]
         sample = torch.from_numpy(sample)
 
         # TODO normalize
+        print("after preprocessing")
         print("l shape : {}".format(label.shape))
         print("s shape : {}".format(sample.shape))
         return label, sample
