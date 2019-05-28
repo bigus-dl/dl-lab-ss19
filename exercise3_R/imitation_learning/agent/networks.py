@@ -23,8 +23,8 @@ class CNN(nn.Module):
         self.conv3 = torch.nn.Conv2d(64, 32, kernel_size=3, stride=1, padding=1)
         self.pool3 = torch.nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
 
-        # input 32x10x10
-        self.fc1 = torch.nn.Linear(32*10*10, 64)
+        # input 32x11x11
+        self.fc1 = torch.nn.Linear(32*11*11, 64)
         self.fc2 = torch.nn.Linear(64, 16)
         self.fc3 = torch.nn.Linear(16, n_classes)
 
@@ -38,9 +38,9 @@ class CNN(nn.Module):
 
         x = self.conv3(x)
         x = self.pool3(x)
-        print("before ", x.shape)
-        x = x.view(x.size[0],-1)
-        print("after ", x.shape)
+        #print("before ", x.shape)
+        x = x.view(x.size(0),-1)
+        #print("after ", x.shape)
 
         x = self.fc1(x)
         x = self.fc2(x)
