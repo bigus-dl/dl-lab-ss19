@@ -9,30 +9,34 @@ class BCAgent:
     
     def __init__(self, learning_rate = 1e-4):
         # TODO: Define network, loss function, optimizer
-        self.net = CNN(history_length=1,n_classes=4)
+        self.net = CNN(history_length=1,n_classes=5)
         self.loss_fn = torch.nn.CrossEntropyLoss()
         self.optimizer = optim.Adam(self.net.parameters(), lr=learning_rate)
-        self.cuda = torch.device('cuda')
-        pass
+
     def update(self, X_batch, y_batch):
-        # TODO: transform input to tensors
-        x = torch.from_numpy(X_batch).to(self.cuda)
-        y = torch.from_numpy(y_batch).to(self.cuda)
 
         # TODO: forward + backward + optimize
         self.net.train()
         self.optimizer.zero_grad()
-        y_hat  = self.net(x)
-        loss = self.loss_fn(y_hat,y)
+        y_hat  = self.net(X_batch)
+        loss = self.loss_fn(y_hat,y_batch)
         loss.backward()
         self.optimizer.step()
 
-        loss = torch.mean(loss).item()
+        loss = loss.item()
         return loss
 
     def predict(self, X):
         self.net.eval()
-        return self.net(X)
+        output = self.net(X)
+        return output
+
+    def validate(self, X_val,y_val):
+        with torch.no_grad():
+            y_hat = self.net(X_val)
+            loss = self.loss_fn(y_hat,y_val)
+            return loss.item()
+
     def load(self, file_name):
         torch.save(self.net.state_dict(), file_name+"_model")
         torch.save(self.optimizer.state_dict(), file_name+"_optimizer")

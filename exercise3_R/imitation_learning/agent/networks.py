@@ -27,7 +27,7 @@ class CNN(nn.Module):
         self.fc1 = torch.nn.Linear(32*10*10, 64)
         self.fc2 = torch.nn.Linear(64, 16)
         self.fc3 = torch.nn.Linear(16, n_classes)
-        self.softmax = torch.nn.Softmax()
+
 
     def forward(self, x):
         x = self.conv1(x)
@@ -42,5 +42,5 @@ class CNN(nn.Module):
         x = self.fc1(x)
         x = self.fc2(x)
         x = self.fc3(x)
-        return self.softmax(x, dim=1)
+        return x
 

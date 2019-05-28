@@ -6,100 +6,108 @@ sys.path.append("../")
 import pickle
 import numpy as np
 import os
-import gzip
 import matplotlib.pyplot as plt
+import argparse
+import pickle
+import torch._C as torch
 
-from exercise3_R.utils import *
 from exercise3_R.imitation_learning.agent.bc_agent import BCAgent
 from exercise3_R.tensorboard_evaluation import Evaluation
-
-def read_data(datasets_dir="./data", frac = 0.1):
-    """
-    This method reads the states and actions recorded in drive_manually.py 
-    and splits it into training/ validation set.
-    """
-    print("... reading data")
-    data_file = os.path.join(datasets_dir, 'data.pkl.gzip')
-  
-    f = gzip.open(data_file,'rb')
-    data = pickle.load(f)
-
-    # get images as features and actions as targets
-    X = np.array(data["state"]).astype('float32')
-    y = np.array(data["action"]).astype('float32')
-
-    # split data into training and validation set
-    n_samples = len(data["state"])
-    X_train, y_train = X[:int((1-frac) * n_samples)], y[:int((1-frac) * n_samples)]
-    X_valid, y_valid = X[int((1-frac) * n_samples):], y[int((1-frac) * n_samples):]
-    return X_train, y_train, X_valid, y_valid
+from exercise3_R.imitation_learning.dataloader import get_data_loader
 
 
-def preprocessing(X_train, y_train, X_valid, y_valid, history_length=1):
 
-    # TODO: preprocess your data here.
-    # 1. convert the images in X_train/X_valid to gray scale. If you use rgb2gray() from utils.py, the output shape (96, 96, 1)
-    # 2. you can train your model with discrete actions (as you get them from read_data) by discretizing the action space 
-    #    using action_to_id() from utils.py.
-    # pylint: disable=E1101
-    for i in range(X_train.shape[0]) :
-        X_train[i,...] = rgb2gray(X_train[i,...])
-        y_train[i] = action_to_id(y_train[i])
+'''
+mini batch shit :
+def minibatched(data: np.ndarray, batch_size: int) -> List[np.ndarray]:
+    assert len(data) % batch_size == 0, ("Data length {} is not multiple of batch size {}"
+                                         .format(len(data), batch_size))
+    return data.reshape(-1, batch_size, *data.shape[1:])
+
+training loop :
+    ix = np.arange(len(x_train))
     
-    for i in range(X_valid.shape[0]) :
-        X_valid[i,...] = rgb2gray(X_valid[i,...])
-        y_valid[i] = action_to_id(y_valid[i])
+    for epoch in range(num_epochs):
+        print("Epoch {} / {}:".format(epoch + 1, num_epochs))
+        training_predictions = []
+        
+        np.random.shuffle(ix)
+        x_train_batched = minibatched(x_train[ix], batch_size)
+        y_train_batched = minibatched(y_train[ix], batch_size)
 
-    # History:
-    # At first you should only use the current image as input to your network to learn the next action. Then the input states
-    # have shape (96, 96, 1). Later, add a history of the last N images to your state so that a state has shape (96, 96, N).
-    if history_length>1 :
-        pass
+'''
 
-    return X_train, y_train, X_valid, y_valid
-
-
-def train_model(X_train, y_train, X_valid, n_minibatches, batch_size, lr, model_dir="./models", tensorboard_dir="./tensorboard"):
-    
-    # create result and model folders
-    if not os.path.exists(model_dir):
-        os.mkdir(model_dir)  
- 
-    print("... train model")
-
-
-    # TODO: specify your agent with the neural network in agents/bc_agent.py 
-    agent = BCAgent(learning_rate=1e-3)
-    
-    tensorboard_eval = Evaluation(name="eval" ,store_dir=tensorboard_dir)
-
-    # TODO: implement the training
-    # 
-    # 1. write a method sample_minibatch and perform an update step
-    # 2. compute training/ validation accuracy and loss for the batch and visualize them with tensorboard. You can watch the progress of
-    #    your training *during* the training in your web browser
-    # 
-    # training loop
-    for i in range(n_minibatches):
-        pass
-    #     ...
-    #     for i % 10 == 0:
-    #         # compute training/ validation accuracy and write it to tensorboard
-    #         tensorboard_eval.write_episode_data(...)
-      
-    # TODO: save your agent
-    # model_dir = agent.save(os.path.join(model_dir, "agent.pt"))
-    # print("Model saved in file: %s" % model_dir)
-
-
-if __name__ == "__main__":
-
-    # read data    
-    X_train, y_train, X_valid, y_valid = read_data("./data")
 
     # preprocess data
-    X_train, y_train, X_valid, y_valid = preprocessing(X_train, y_train, X_valid, y_valid, history_length=1)
+    
 
     # train model (you can change the parameters!)
-    train_model(X_train, y_train, X_valid, n_minibatches=1000, batch_size=64, lr=1e-4)
- 
+
+datasets_dir = "./data"
+snapshot_dir = "./snaps/snap"
+tensorboard_dir="./tensorboard"
+
+# arg pars
+parser = argparse.ArgumentParser()
+parser.add_argument("--cont", action = "store_true", dest="continute_training", default = False, help ='continue training')
+parser.add_argument("--snap", action = "store_true", dest="save_snaps", default = False, help='save snapshots every 5 epochs')
+parser.add_argument('-lr', type=float, dest="learning_rate", default=1e-3, help='learning rate')
+parser.add_argument('-bsize', type=int, dest="batch_size", default=5, help='batch size')
+parser.add_argument('-epeval', type=int, dest="epoch_eval", default=1, help='evaluate every x epochs') 
+parser.add_argument('-epochs', type=int, dest="num_epochs", default=2000, help='number of epochs')
+args = parser.parse_args()
+print("settings :\ncontinute flag: {}\t batch size: {}".format(args.continute_training,args.batch_size))
+print("number of epochs: {}\t evaluate every {} epochs".format(args.num_epochs,args.epoch_eval))
+print("learning rate: {}\t save snapshots:{}".format(args.learning_rate,args.save_snaps))
+
+# loaders
+train_loader = get_data_loader(datasets_dir, frac=0.1, batch_size=args.batch_size, is_train=True, single_sample=False)
+val_loader = get_data_loader(datasets_dir, frac=0.1, batch_size=args.batch_size, is_train=False, single_sample=False)
+
+# losses
+train_loss = val_loss = 0
+
+
+# getting cuda, agent
+print("initializing agent, cuda ...")
+agent = BCAgent(learning_rate=args.learning_rate)
+cuda = torch.device('cuda')
+agent.net.to(cuda)
+
+#tensorboard --logdir=path/to/log-directory --port=6006
+
+# if flag --c is set, continute training from a previous snapshot
+if(args.continute_training):
+    print("--c flag set")
+    try:
+        agent.load(snapshot_dir)
+    except FileNotFoundError:
+        print("snapshot file(s) not found")
+
+print("starting tensorboard")
+tensorboard_eval = Evaluation(name="eval" ,store_dir=tensorboard_dir, stats= ['train_loss', 'val_loss','epoch_loss'])
+
+
+print("training ...")
+for epoch in range(1,args.num_epochs):    
+    print("epoch {}/{}".format(epoch,args.num_epochs))
+    val_iterator = iter(val_loader)
+    
+    for idx, (y_batch, X_batch) in enumerate(train_loader) :
+        y_batch = y_batch.to(cuda)
+        X_batch = X_batch.to(cuda)
+        # one f/b pass
+        loss_t = + agent.update(X_batch,y_batch)
+
+        if idx%10 ==0 :
+            X_batch_val, y_batch_val = next(val_iterator)
+            y_batch_val = y_batch_val.to(cuda)
+            X_batch_val = X_batch_val.to(cuda)
+            loss_v = agent.validate(X_batch_val,y_batch_val)
+            eval_dict = dict()
+            eval_dict['train_loss'] = loss_t
+            eval_dict['val_loss'] = loss_v
+            loss_t = loss_v =0
+            tensorboard_eval.write_episode_data(idx, eval_dict)
+            if args.save_snaps :
+                agent.save(snapshot_dir)
