@@ -9,16 +9,16 @@ import os
 import gzip
 import matplotlib.pyplot as plt
 
-from utils import *
-from agent.bc_agent import BCAgent
-from tensorboard_evaluation import Evaluation
+from exercise3_R.utils import *
+from exercise3_R.imitation_learning.agent.bc_agent import BCAgent
+from exercise3_R.tensorboard_evaluation import Evaluation
 
 def read_data(datasets_dir="./data", frac = 0.1):
     """
     This method reads the states and actions recorded in drive_manually.py 
     and splits it into training/ validation set.
     """
-    print("... read data")
+    print("... reading data")
     data_file = os.path.join(datasets_dir, 'data.pkl.gzip')
   
     f = gzip.open(data_file,'rb')
@@ -41,11 +41,21 @@ def preprocessing(X_train, y_train, X_valid, y_valid, history_length=1):
     # 1. convert the images in X_train/X_valid to gray scale. If you use rgb2gray() from utils.py, the output shape (96, 96, 1)
     # 2. you can train your model with discrete actions (as you get them from read_data) by discretizing the action space 
     #    using action_to_id() from utils.py.
+    # pylint: disable=E1101
+    for i in range(X_train.shape[0]) :
+        X_train[i,...] = rgb2gray(X_train[i,...])
+        y_train[i] = action_to_id(y_train[i])
+    
+    for i in range(X_valid.shape[0]) :
+        X_valid[i,...] = rgb2gray(X_valid[i,...])
+        y_valid[i] = action_to_id(y_valid[i])
 
     # History:
     # At first you should only use the current image as input to your network to learn the next action. Then the input states
     # have shape (96, 96, 1). Later, add a history of the last N images to your state so that a state has shape (96, 96, N).
-    
+    if history_length>1 :
+        pass
+
     return X_train, y_train, X_valid, y_valid
 
 
@@ -59,9 +69,9 @@ def train_model(X_train, y_train, X_valid, n_minibatches, batch_size, lr, model_
 
 
     # TODO: specify your agent with the neural network in agents/bc_agent.py 
-    # agent = BCAgent(...)
+    agent = BCAgent(learning_rate=1e-3)
     
-    tensorboard_eval = Evaluation(tensorboard_dir)
+    tensorboard_eval = Evaluation(name="eval" ,store_dir=tensorboard_dir)
 
     # TODO: implement the training
     # 
@@ -70,7 +80,8 @@ def train_model(X_train, y_train, X_valid, n_minibatches, batch_size, lr, model_
     #    your training *during* the training in your web browser
     # 
     # training loop
-    # for i in range(n_minibatches):
+    for i in range(n_minibatches):
+        pass
     #     ...
     #     for i % 10 == 0:
     #         # compute training/ validation accuracy and write it to tensorboard

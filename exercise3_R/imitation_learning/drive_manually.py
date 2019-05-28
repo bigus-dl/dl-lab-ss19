@@ -9,7 +9,7 @@ import os
 from datetime import datetime
 import gzip
 import json
-
+import time
 
 def key_press(k, mod):
     global restart
@@ -79,12 +79,16 @@ if __name__ == "__main__":
     a = np.array([0.0, 0.0, 0.0]).astype('float32')
     
     episode_rewards = []
+    episode_count = 1
     steps = 0
+
+    fps_ms = (1/70)*1000
+
     while True:
         episode_reward = 0
         state = env.reset()
         while True:
-
+            time_last = time.time()
             next_state, r, done, info = env.step(a)
             episode_reward += r
 
@@ -105,12 +109,29 @@ if __name__ == "__main__":
                 print('... saving data')
                 store_data(samples, "./data")
                 save_results(episode_rewards, "./results")
+                cin = input("continue ? (y/n/dontgiveashit) ")
+                for i in range(5):
+                    print("starting in {}".format(5-i))
+                    time.sleep(1)
 
             env.render()
+            diff_ms = (time.time()-time_last)*1000
+
+            if diff_ms<fps_ms:
+                time.sleep((fps_ms-diff_ms)/1000)
+
             if done: 
                 break
         
         episode_rewards.append(episode_reward)
+        print("episode {} finished".format(episode_count))
+        if episode_count % 5 == 0 :
+            cin = input("continue ? (y/n/dontgiveashit) ")
+            for i in range(5):
+                print("starting in {}".format(5-i))
+                time.sleep(1)
+        episode_count+=1
+        
 
     env.close()
 
