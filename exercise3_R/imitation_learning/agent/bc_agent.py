@@ -19,7 +19,7 @@ class BCAgent:
         self.optimizer.zero_grad()
         y_hat  = self.net(X_batch)
         print("y_hat {} , y_batch {}".format(y_hat,y_batch))
-        loss = self.loss_fn(y_hat,y_batch)
+        loss = self.loss_fn(y_hat, y_batch.squeeze())
         loss.backward()
         self.optimizer.step()
 
