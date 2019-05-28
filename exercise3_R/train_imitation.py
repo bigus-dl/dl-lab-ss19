@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 import sys
 sys.path.append("../") 
 
@@ -11,9 +9,9 @@ import argparse
 import pickle
 import torch._C as torch
 
-from exercise3_R.imitation_learning.agent.bc_agent import BCAgent
+from ..agent.bc_agent import BCAgent
 from exercise3_R.tensorboard_evaluation import Evaluation
-from exercise3_R.imitation_learning.dataloader import get_data_loader
+from dataloader import get_data_loader
 
 '''
 mini batch shit :
