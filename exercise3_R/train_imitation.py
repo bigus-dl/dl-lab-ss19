@@ -11,31 +11,6 @@ from imitation_learning.agent.bc_agent import BCAgent
 from imitation_learning.dataloader import get_data_loader
 from tensorboard_evaluation import Evaluation
 
-'''
-mini batch shit :
-def minibatched(data: np.ndarray, batch_size: int) -> List[np.ndarray]:
-    assert len(data) % batch_size == 0, ("Data length {} is not multiple of batch size {}"
-                                         .format(len(data), batch_size))
-    return data.reshape(-1, batch_size, *data.shape[1:])
-
-training loop :
-    ix = np.arange(len(x_train))
-    
-    for epoch in range(num_epochs):
-        print("Epoch {} / {}:".format(epoch + 1, num_epochs))
-        training_predictions = []
-        
-        np.random.shuffle(ix)
-        x_train_batched = minibatched(x_train[ix], batch_size)
-        y_train_batched = minibatched(y_train[ix], batch_size)
-'''
-
-
-    # preprocess data
-    
-
-    # train model (you can change the parameters!)
-
 datasets_dir = "./imitation_learning/data"
 snapshot_dir = "./imitation_learning/snaps/snap"
 tensorboard_dir="./imitation_learning/tensorboard"
@@ -62,9 +37,6 @@ snapshot_dir += args.name
 train_loader = get_data_loader(datasets_dir, frac=0.1, batch_size=args.batch_size, is_train=True , single_sample=False, history=args.history)
 val_loader   = get_data_loader(datasets_dir, frac=0.1, batch_size=args.batch_size, is_train=False, single_sample=False, history=args.history)
 
-# losses
-train_loss = val_loss = 0
-
 # setting up cuda, agent
 print("initializing agent, cuda ...")
 cuda = torch.device('cuda')
@@ -82,6 +54,8 @@ if(args.continute_training):
 print("starting tensorboard")
 tensorboard_eval = Evaluation(name="eval_"+args.name ,store_dir=tensorboard_dir, stats= ['train_loss', 'val_loss'])
 
+# losses
+train_loss = val_loss = 0
 
 print("training ...")
 for epoch in range(1,args.num_epochs):    
