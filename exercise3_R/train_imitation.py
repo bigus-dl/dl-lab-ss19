@@ -56,7 +56,7 @@ args = parser.parse_args()
 print("settings :\ncontinute flag: {}\t batch size: {}".format(args.continute_training,args.batch_size))
 print("number of epochs: {}\t name {}".format(args.num_epochs,args.name))
 print("learning rate: {}\t save snapshots:{}".format(args.learning_rate,args.save_snaps))
-print("weighted: {}\t history :{}".format(args.learning_rate,args.save_snaps))
+print("weighted: {}\t history :{}".format(args.weighted,args.history))
 snapshot_dir += args.name
 # loaders
 train_loader = get_data_loader(datasets_dir, frac=0.1, batch_size=args.batch_size, is_train=True , single_sample=False, history=args.history)
