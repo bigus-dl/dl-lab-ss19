@@ -18,12 +18,13 @@ class BCAgent:
         accelerate  :   13639   : 0,27278, reverse : 3,665957915
         sum         :   50000   : 1      , reverse : 1
         '''
-        self.loss_fn = torch.nn.CrossEntropyLoss(weight=torch.Tensor([12,382367509, 44,722719141, 5,692167577, 2,230052183, 3,665957915]))
+        self.class_weights = torch.Tensor([12,382367509, 44,722719141, 5,692167577, 2,230052183, 3,665957915])
+        self.loss_fn = torch.nn.CrossEntropyLoss(weight=self.class_weights)
         self.optimizer = optim.Adam(self.net.parameters(), lr=learning_rate)
 
     def update(self, X_batch, y_batch):
 
-        # TODO: forward + backward + optimize
+        # TODO: forward + backward + optimizer
         self.net.train()
         self.optimizer.zero_grad()
         y_hat  = self.net(X_batch)
