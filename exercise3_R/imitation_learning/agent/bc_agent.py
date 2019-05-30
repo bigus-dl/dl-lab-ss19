@@ -6,19 +6,21 @@ from imitation_learning.agent.networks import CNN
 
 class BCAgent:
     
-    def __init__(self, learning_rate = 1e-4, cuda = None):
+    def __init__(self, learning_rate = 1e-4, cuda = None, weighted=False, history=1):
         # TODO: Define network, loss function, optimizer
         '''
-        counts and weights
-        right       :   4038    : 0,08076, reverse : 12,382367509
-        break       :   1118    : 0,02236, reverse : 44,722719141
-        left        :   8784    : 0,17568, reverse : 5,692167577
-        straight    :   22421   : 0,44842, reverse : 2,230052183
-        accelerate  :   13639   : 0,27278, reverse : 3,665957915
-        sum         :   50000   : 1      , reverse : 1
+            left            right           accel.          brake           straight
+        count :     8784            4038            13639           1118            22421
+        normal:     0.17568         0.08076         0.27278         0.02236         0.44842
+        revers:     5.692167577     12.382367508    3.665957914     44.722719141    2.230052183
+        normal:     0.083708346     0.1820936398    0.053911145     0.6576870461    0.032794885
+        sftmax:     0.1724          0.1902          0.1674          0.3061          0.1639
+        sftmax:     0.1943          0.1978          0.1933          0.2221          0.1926
         '''
-        self.net = CNN(history_length=1,n_classes=5)
-        self.class_weights = torch.Tensor([12.382367509, 44.722719141, 5.692167577, 2.230052183, 3.665957915]).to(cuda)
+        self.net = CNN(history_length=history,n_classes=5)
+        self.class_weights = torch.Tensor([1, 1, 1, 1, 1]).to(cuda)
+        if weighted:
+            self.class_weights = torch.Tensor([0.1724, 0.1902, 0.1674, 0.3061, 0.1639]).to(cuda)
         self.net.to(cuda)
         self.loss_fn = torch.nn.CrossEntropyLoss(weight=self.class_weights)
         self.optimizer = optim.Adam(self.net.parameters(), lr=learning_rate)

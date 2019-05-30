@@ -21,7 +21,7 @@ def class_distribution():
     count['left'] = 0
     count['right'] = 0
     count['accelerate'] = 0
-    count['break'] = 0
+    count['brake'] = 0
     count['straight'] = 0
 
     for i in range(len(y)) :
@@ -35,17 +35,25 @@ def class_distribution():
     plt.xticks(range(len(count)), list(count.keys()))
     plt.show()
 
-    for x in count:
-        print ("{} : {}".format(x , count[x]))
-
-class_distribution()
+    #for x in count:
+    #    print ("{} : count {}, normalized : {}, reverse  : {}, normalized : {}".format(x , count[x], count[x]/50000, 50000/count[x], 50000/(count[x]*68)))
 
 '''
-counts and weights
-right : 4038 : 0,08076
-break : 1118 : 0,02236
-left : 8784 : 0,17568
-straight : 22421 : 0,44842
-accelerate : 13639 : 0,27278
-sum : 50000
+            left            right           accel.          brake           straight
+count :     8784            4038            13639           1118            22421
+normal:     0.17568         0.08076         0.27278         0.02236         0.44842
+revers:     5.692167577     12.382367508    3.665957914     44.722719141    2.230052183
+normal:     0.083708346     0.1820936398    0.053911145     0.6576870461    0.032794885
+sftmax:     0.1724          0.1902          0.1674          0.3061          0.1639
+sftmax:     0.1943          0.1978          0.1933          0.2221          0.1926
 '''
+
+# class_distribution()
+b = torch.Tensor([0.083708346,     0.1820936398,    0.053911145,     0.6576870461,    0.032794885])
+print(torch.nn.functional.softmax(b,dim=0))
+b = torch.nn.functional.softmax(b,dim=0)
+print(torch.nn.functional.softmax(b,dim=0))
+b = torch.nn.functional.softmax(b,dim=0)
+print(torch.nn.functional.softmax(b,dim=0))
+b = torch.nn.functional.softmax(b,dim=0)
+print(torch.nn.functional.softmax(b,dim=0))

@@ -44,35 +44,31 @@ tensorboard_dir="./imitation_learning/tensorboard"
 parser = argparse.ArgumentParser()
 parser.add_argument("--cont", action = "store_true", dest="continute_training", default = False, help ='continue training')
 parser.add_argument("--snap", action = "store_true", dest="save_snaps", default = False, help='save snapshots every 5 epochs')
+parser.add_argument('-name', type=str, dest="name", default="", help='name of the run')
 parser.add_argument('-lr', type=float, dest="learning_rate", default=1e-3, help='learning rate')
 parser.add_argument('-bsize', type=int, dest="batch_size", default=5, help='batch size')
-parser.add_argument('-epeval', type=int, dest="epoch_eval", default=1, help='evaluate every x epochs') 
 parser.add_argument('-epochs', type=int, dest="num_epochs", default=2000, help='number of epochs')
+# specific args for this training
+parser.add_argument("--weighted", action = "store_true", dest="weighted", default = False, help ='apply weights to loss function')
+parser.add_argument('-history', type=int, dest="history", default=1, help='number of previous frames to stack')
+
 args = parser.parse_args()
 print("settings :\ncontinute flag: {}\t batch size: {}".format(args.continute_training,args.batch_size))
-print("number of epochs: {}\t evaluate every {} epochs".format(args.num_epochs,args.epoch_eval))
+print("number of epochs: {}\t name {}".format(args.num_epochs,args.name))
 print("learning rate: {}\t save snapshots:{}".format(args.learning_rate,args.save_snaps))
-
+print("weighted: {}\t history :{}".format(args.learning_rate,args.save_snaps))
+snapshot_dir += args.name
 # loaders
-train_loader = get_data_loader(datasets_dir, frac=0.1, batch_size=args.batch_size, is_train=True, single_sample=False)
-val_loader = get_data_loader(datasets_dir, frac=0.1, batch_size=args.batch_size, is_train=False, single_sample=False)
+train_loader = get_data_loader(datasets_dir, frac=0.1, batch_size=args.batch_size, is_train=True , single_sample=False, history=args.history)
+val_loader   = get_data_loader(datasets_dir, frac=0.1, batch_size=args.batch_size, is_train=False, single_sample=False, history=args.history)
 
 # losses
 train_loss = val_loss = 0
 
 # setting up cuda, agent
-
 print("initializing agent, cuda ...")
 cuda = torch.device('cuda')
-agent = BCAgent(learning_rate=args.learning_rate, cuda = cuda)
-print('1')
-
-print('2')
-agent.net.to(cuda)
-agent.class_weights = agent.class_weights.to(cuda)
-print('3')
-
-#tensorboard --logdir=path/to/log-directory --port=6006
+agent = BCAgent(learning_rate=args.learning_rate, cuda=cuda, weighted=args.weighted, history=args.history)
 
 # if flag --c is set, continute training from a previous snapshot
 if(args.continute_training):
@@ -82,8 +78,9 @@ if(args.continute_training):
     except FileNotFoundError:
         print("snapshot file(s) not found")
 
+#tensorboard --logdir=path/to/log-directory --port=6006
 print("starting tensorboard")
-tensorboard_eval = Evaluation(name="eval" ,store_dir=tensorboard_dir, stats= ['train_loss', 'val_loss'])
+tensorboard_eval = Evaluation(name="eval_"+args.name ,store_dir=tensorboard_dir, stats= ['train_loss', 'val_loss'])
 
 
 print("training ...")

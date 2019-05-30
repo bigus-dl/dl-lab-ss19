@@ -10,7 +10,7 @@ import torch.utils.data
 PKG_NAME = "data.pkl.gzip"
 
 class PickleReader(torch.utils.data.Dataset):
-    def __init__(self, datasets_dir, frac=0.1, single_sample=False, is_train=True):
+    def __init__(self, datasets_dir, frac=0.1, single_sample=False, is_train=True, history=1):
         
         print("decompressing data...")
 
@@ -20,6 +20,7 @@ class PickleReader(torch.utils.data.Dataset):
         data = pickle.load(f)
 
         self.is_train = is_train
+        self.history = history
 
         # get images as features and actions as targets
         X = np.array(data["state"]).astype('uint8')
@@ -41,27 +42,42 @@ class PickleReader(torch.utils.data.Dataset):
             idx = 666
 
         label = self.y[idx,:]
-        sample = self.X[idx,:]
+        samples = torch.zeros(self.history, self.X.shape[1], self.X.shape[2])
+        for i in range(self.history) :
+            # if the index allows, add previous frames
+            if idx-i>=0 :
+                sample = self.X[idx-i,:]
+                sample = rgb2gray(sample)
+                sample = sample/255
+                samples[i] = torch.from_numpy(sample)
 
-        # preprocess data
+            # preprocess data
         label = action_to_id(label)
         label = torch.LongTensor([label])
-        sample = rgb2gray(sample)
-        sample = sample/255
-        sample = sample[np.newaxis,:,:]
-        sample = torch.from_numpy(sample)
 
-        # TODO normalize
-        return label, sample
-        
+        return label, samples
+        '''
+        else :
+            label = self.y[idx,:]
+            sample = self.X[idx,:]
 
+            # preprocess data
+            label = action_to_id(label)
+            label = torch.LongTensor([label])
+            sample = rgb2gray(sample)
+            sample = sample/255
+            sample = sample[np.newaxis,:,:]
+            sample = torch.from_numpy(sample)
+
+            return label, sample
+        '''
     def __len__(self):
         return len(self.y)
 
 
-def get_data_loader(datasets_dir, frac=0.1, batch_size=1, is_train=False, single_sample=False):
+def get_data_loader(datasets_dir, frac=0.1, batch_size=1, is_train=False, single_sample=False, history=1):
 
-    reader = PickleReader(datasets_dir, frac, single_sample=single_sample, is_train=is_train)
+    reader = PickleReader(datasets_dir, frac, single_sample=single_sample, is_train=is_train, history=history)
     
     data_loader = torch.utils.data.DataLoader(reader,
                                               batch_size=batch_size,

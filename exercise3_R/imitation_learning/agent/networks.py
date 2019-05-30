@@ -8,7 +8,7 @@ Imitation learning network
 
 class CNN(nn.Module):
 
-    def __init__(self, history_length=0, n_classes=3): 
+    def __init__(self, history_length=0, n_classes=5): 
         super(CNN, self).__init__()
 
         # input 96x96

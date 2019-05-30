@@ -1,4 +1,6 @@
 
+#!/usr/bin/python3
+
 from datetime import datetime
 import numpy as np
 import gym
@@ -36,16 +38,14 @@ def run_episode(env, agent, rendering=True, max_timesteps=1000):
         #       - you can use the softmax output to calculate the amount of lateral acceleration
         # a = ...
         a = agent.predict(state)
-        # a = -a
-        
         a = torch.nn.functional.softmax(a)
         print("softmax output {}".format(a.detach().numpy()))
-        a = id_to_action(torch.argmax(a).item(),max_speed=0.8)
+        # run #1 max_speed = 0.8
+        a = id_to_action(torch.argmax(a).item(),max_speed=1)
         next_state, r, done, info = env.step(a)   
         episode_reward += r       
         state = next_state
         step += 1
-        # time.sleep(0.01)
         
         if rendering:
             env.render()
