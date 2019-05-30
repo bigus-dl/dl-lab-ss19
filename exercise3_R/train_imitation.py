@@ -65,7 +65,7 @@ for epoch in range(1,args.num_epochs):
     for idx, (y_batch, X_batch) in enumerate(train_loader) :
         y_batch = y_batch.to(cuda)
         X_batch = X_batch.to(cuda)
-        # one f/b pass
+        # one fwd/bwd pass
         loss_t = + agent.update(X_batch,y_batch)
 
         if (idx+1)%10 ==0 :
