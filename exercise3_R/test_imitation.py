@@ -36,15 +36,16 @@ def run_episode(env, agent, rendering=True, max_timesteps=1000):
         #       - you can use the softmax output to calculate the amount of lateral acceleration
         # a = ...
         a = agent.predict(state)
-        a = -a
+        # a = -a
         
         a = torch.nn.functional.softmax(a)
         print("softmax output {}".format(a.detach().numpy()))
-        a = id_to_action(,max_speed=0.1)
+        a = id_to_action(torch.argmax(a).item(),max_speed=0.8)
         next_state, r, done, info = env.step(a)   
         episode_reward += r       
         state = next_state
         step += 1
+        # time.sleep(0.01)
         
         if rendering:
             env.render()
@@ -79,7 +80,7 @@ if __name__ == "__main__":
     results["mean"] = np.array(episode_rewards).mean()
     results["std"] = np.array(episode_rewards).std()
  
-    fname = "results/results_bc_agent-%s.json" % datetime.now().strftime("%Y%m%d-%H%M%S")
+    fname = "./imitation_learning/results/results_bc_agent-%s.json" % datetime.now().strftime("%Y%m%d-%H%M%S")
     fh = open(fname, "w")
     json.dump(results, fh)
             

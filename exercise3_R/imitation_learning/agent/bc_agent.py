@@ -9,7 +9,16 @@ class BCAgent:
     def __init__(self, learning_rate = 1e-4):
         # TODO: Define network, loss function, optimizer
         self.net = CNN(history_length=1,n_classes=5)
-        self.loss_fn = torch.nn.CrossEntropyLoss()
+        '''
+        counts and weights
+        right       :   4038    : 0,08076, reverse : 12,382367509
+        break       :   1118    : 0,02236, reverse : 44,722719141
+        left        :   8784    : 0,17568, reverse : 5,692167577
+        straight    :   22421   : 0,44842, reverse : 2,230052183
+        accelerate  :   13639   : 0,27278, reverse : 3,665957915
+        sum         :   50000   : 1      , reverse : 1
+        '''
+        self.loss_fn = torch.nn.CrossEntropyLoss(weight=torch.Tensor([12,382367509, 44,722719141, 5,692167577, 2,230052183, 3,665957915]))
         self.optimizer = optim.Adam(self.net.parameters(), lr=learning_rate)
 
     def update(self, X_batch, y_batch):
