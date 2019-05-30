@@ -6,9 +6,8 @@ from imitation_learning.agent.networks import CNN
 
 class BCAgent:
     
-    def __init__(self, learning_rate = 1e-4):
+    def __init__(self, learning_rate = 1e-4, cuda = None):
         # TODO: Define network, loss function, optimizer
-        self.net = CNN(history_length=1,n_classes=5)
         '''
         counts and weights
         right       :   4038    : 0,08076, reverse : 12,382367509
@@ -18,7 +17,9 @@ class BCAgent:
         accelerate  :   13639   : 0,27278, reverse : 3,665957915
         sum         :   50000   : 1      , reverse : 1
         '''
-        self.class_weights = torch.Tensor([12,382367509, 44,722719141, 5,692167577, 2,230052183, 3,665957915])
+        self.net = CNN(history_length=1,n_classes=5)
+        self.class_weights = torch.Tensor([12,382367509, 44,722719141, 5,692167577, 2,230052183, 3,665957915]).to(cuda)
+        self.net.to(cuda)
         self.loss_fn = torch.nn.CrossEntropyLoss(weight=self.class_weights)
         self.optimizer = optim.Adam(self.net.parameters(), lr=learning_rate)
 

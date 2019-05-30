@@ -61,10 +61,12 @@ val_loader = get_data_loader(datasets_dir, frac=0.1, batch_size=args.batch_size,
 train_loss = val_loss = 0
 
 # setting up cuda, agent
+
 print("initializing agent, cuda ...")
-agent = BCAgent(learning_rate=args.learning_rate)
-print('1')
 cuda = torch.device('cuda')
+agent = BCAgent(learning_rate=args.learning_rate, cuda = cuda)
+print('1')
+
 print('2')
 agent.net.to(cuda)
 agent.class_weights = agent.class_weights.to(cuda)
