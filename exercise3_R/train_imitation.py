@@ -89,5 +89,5 @@ for epoch in range(1,args.num_epochs):
     epoch_dict = dict()
     epoch_dict['training_loss_epoch'] = loss_e_t/len(train_loader)
     epoch_dict['validation_loss_epoch'] = loss_e_v/len(val_loader)
-    tensorboard_eval.write_episode_data(epoch*len(train_loader)+idx, epoch_dict)
+    # tensorboard_eval.write_episode_data(epoch*len(train_loader)+idx, epoch_dict)
     loss_e_t = loss_e_v = 0
