@@ -51,7 +51,7 @@ if(args.continute_training):
     except FileNotFoundError:
         print("snapshot file(s) not found")
 
-#tensorboard --logdir=path/to/log-directory --port=6006
+#tensorboard --logdir=./tensorboard --port=6006
 #print("starting tensorboard")
 #tensorboard_eval = Evaluation(name="eval_"+args.name ,store_dir=tensorboard_dir, stats= ['training_loss', 'validation_loss', 'epoch_training_loss', 'epoch_validation_loss'])
 writer = SummaryWriter(os.path.join(tensorboard_dir,args.name))
@@ -82,9 +82,9 @@ for epoch in range(1,args.num_epochs):
             writer.add_scalar("training_loss", loss_t/10, epoch*len(train_loader)+idx)
             writer.add_scalar("validation_loss", loss_v, epoch*len(train_loader)+idx)
             loss_t = loss_v =0
-            if args.save_snaps :
-                agent.save(snapshot_dir)
         
     writer.add_scalar("epoch_training_loss", loss_e_t/len(train_loader), epoch*(len(train_loader)+1))
     writer.add_scalar("epoch_validation_loss", loss_e_v/len(val_loader), epoch*(len(train_loader)+1))
     loss_e_t = loss_e_v = 0
+    if args.save_snaps :
+        agent.save(snapshot_dir)
