@@ -16,26 +16,27 @@ class Evaluation:
         self.stats = stats
         self.pl_stats = {}
         
+        
+
+    def write_episode_data(self, episode, eval_dict):
+        """
+            Write episode statistics in eval_dict to tensorboard, make sure that the entries in eval_dict are specified in stats.
+            e.g. eval_dict = {"loss" : 1e-4}
+        """
         for s in self.stats:
             self.pl_stats[s] = tf.placeholder(tf.float32, name=s)
             tf.summary.scalar(s, self.pl_stats[s])
-            
         self.performance_summaries = tf.summary.merge_all()
+        
+        my_dict = {}
+        for k in eval_dict:
+            assert(k in self.stats)
+            my_dict[self.pl_stats[k]] = eval_dict[k]
 
-    def write_episode_data(self, episode, eval_dict):
-       """
-        Write episode statistics in eval_dict to tensorboard, make sure that the entries in eval_dict are specified in stats.
-        e.g. eval_dict = {"loss" : 1e-4}
-       """
-       my_dict = {}
-       for k in eval_dict:
-          assert(k in self.stats)
-          my_dict[self.pl_stats[k]] = eval_dict[k]
+        summary = self.sess.run(self.performance_summaries, feed_dict=my_dict)
 
-       summary = self.sess.run(self.performance_summaries, feed_dict=eval_dict)
-
-       self.tf_writer.add_summary(summary, episode)
-       self.tf_writer.flush()
+        self.tf_writer.add_summary(summary, episode)
+        self.tf_writer.flush()
 
     def close_session(self):
         self.tf_writer.close()
