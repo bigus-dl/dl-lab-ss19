@@ -52,7 +52,7 @@ if(args.continute_training):
 
 #tensorboard --logdir=path/to/log-directory --port=6006
 print("starting tensorboard")
-tensorboard_eval = Evaluation(name="eval_"+args.name ,store_dir=tensorboard_dir, stats= ['training_loss', 'validation_loss'])
+tensorboard_eval = Evaluation(name="eval_"+args.name ,store_dir=tensorboard_dir, stats= ['training_loss', 'validation_loss', 'epoch_t', 'epoch_v'])
 
 # losses
 loss_t = loss_v = 0
