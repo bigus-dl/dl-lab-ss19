@@ -24,7 +24,7 @@ class BCAgent:
         if weighted:
             self.class_weights = torch.Tensor([1., 2.17533432, 0.64403549, 7.8568873, 0.39177557]).to(cuda)
         self.net.to(cuda)
-        self.loss_fn = torch.nn.CrossEntropyLoss(weight=self.class_weights)
+        self.loss_fn = torch.nn.CrossEntropyLoss(weight=self.class_weights).to(cuda)
         self.optimizer = optim.Adam(self.net.parameters(), lr=learning_rate)
 
     def update(self, X_batch, y_batch):
@@ -49,10 +49,9 @@ class BCAgent:
     @torch.no_grad()
     def validate(self, X_val,y_val):
         self.net.eval()
-        with torch.no_grad():
-            y_hat = self.net(X_val)
-            loss = self.loss_fn(y_hat, y_val.squeeze())
-            return loss.item()
+        y_hat = self.net(X_val)
+        loss = self.loss_fn(y_hat, y_val.squeeze())
+        return loss.item()
 
     def save(self, file_name):
         torch.save(self.net.state_dict(), file_name+"_model")
