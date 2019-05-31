@@ -37,13 +37,16 @@ class BCAgent:
 
         loss = loss.item()
         return loss
-
+    
+    @torch.no_grad()
     def predict(self, X):
         self.net.eval()
         output = self.net(X)
         return output
 
+    @torch.no_grad()
     def validate(self, X_val,y_val):
+        self.net.eval()
         with torch.no_grad():
             y_hat = self.net(X_val)
             loss = self.loss_fn(y_hat, y_val.squeeze())
