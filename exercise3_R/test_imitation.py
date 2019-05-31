@@ -62,14 +62,14 @@ if __name__ == "__main__":
     n_test_episodes = 15                  # number of episodes to test
 
     # TODO: load agent
-    agent = BCAgent(history=10)
-    mname = "weighted10"
+    agent = BCAgent(history=1)
+    mname = "pure"
     agent.load("./imitation_learning/snaps/snap"+mname)
     env = gym.make('CarRacing-v0').unwrapped
 
     episode_rewards = []
     for i in range(n_test_episodes):
-        episode_reward = run_episode(env, agent, rendering=rendering, history=10)
+        episode_reward = run_episode(env, agent, rendering=rendering, history=1)
         episode_rewards.append(episode_reward)
 
     # save results in a dictionary and write them into a .json file

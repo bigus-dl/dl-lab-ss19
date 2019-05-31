@@ -22,7 +22,7 @@ class BCAgent:
         self.net = CNN(history_length=history,n_classes=5)
         self.class_weights = torch.Tensor([1, 1, 1, 1, 1]).to(cuda)
         if weighted:
-            self.class_weights = torch.Tensor([1., 2.17533432, 0.64403549, 7.8568873, 0.39177557]).to(cuda)
+            self.class_weights = torch.Tensor([0.39177557, 1., 2.17533432, 0.64403549, 7.8568873]).to(cuda)
         self.net.to(cuda)
         self.loss_fn = torch.nn.CrossEntropyLoss(weight=self.class_weights).to(cuda)
         self.optimizer = optim.Adam(self.net.parameters(), lr=learning_rate)
