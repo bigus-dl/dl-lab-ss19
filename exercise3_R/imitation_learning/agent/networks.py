@@ -12,18 +12,29 @@ class CNN(nn.Module):
         super(CNN, self).__init__()
 
         # input 96x96
-        self.conv1 = torch.nn.Conv2d(history_length, 16, kernel_size=4, stride=2, padding=0)
+        self.conv1 = torch.nn.Conv2d(history_length, 32, kernel_size=5, stride=1, padding=1)
+        self.pool1 = torch.nn.AvgPool2d(kernel_size=2, stride=2, padding=0)
+
+        # input 47x47
+        self.conv2 = torch.nn.Conv2d(32, 64, kernel_size=4, stride=1, padding=1)
+        self.pool2 = torch.nn.AvgPool2d(kernel_size=2, stride=2, padding=0)
+
+        # input 22x22
+        self.conv3 = torch.nn.Conv2d(64, 32, kernel_size=3, stride=1, padding=1)
+        self.pool3 = torch.nn.AvgPool2d(kernel_size=2, stride=2, padding=0)
+
+        # input 32x11x11
+        self.fc1 = torch.nn.Linear(32*11*11, 64)
+        self.fc2 = torch.nn.Linear(64, 16)
+        self.fc3 = torch.nn.Linear(16, n_classes)
         self.rlu = torch.nn.ReLU()
-        # input 48x48
-        self.conv2 = torch.nn.Conv2d(16, 32, kernel_size=2, stride=2, padding=0)
-        # input 24x24
-        self.fc1 = torch.nn.Linear(32*23*23, 32)
-        self.fc2 = torch.nn.Linear(32, n_classes)
 
     def forward(self, x):
         x = self.conv1(x)
         x = self.rlu(x)
         x = self.conv2(x)
+        x = self.rlu(x)
+        x = self.conv3(x)
         x = self.rlu(x)
         x = x.view(x.size(0),-1)
 
