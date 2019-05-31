@@ -52,10 +52,11 @@ if(args.continute_training):
 
 #tensorboard --logdir=path/to/log-directory --port=6006
 print("starting tensorboard")
-tensorboard_eval = Evaluation(name="eval_"+args.name ,store_dir=tensorboard_dir, stats= ['train_loss', 'val_loss'])
+tensorboard_eval = Evaluation(name="eval_"+args.name ,store_dir=tensorboard_dir, stats= ['training_loss', 'validation_loss', 'training_loss_epoch','validation_loss_epoch'])
 
 # losses
-train_loss = val_loss = 0
+loss_t = loss_v = 0
+loss_e_t = loss_e_v = 0
 
 print("training ...")
 for epoch in range(1,args.num_epochs):    
@@ -66,7 +67,9 @@ for epoch in range(1,args.num_epochs):
         y_batch = y_batch.to(cuda)
         X_batch = X_batch.to(cuda)
         # one fwd/bwd pass
-        loss_t = + agent.update(X_batch,y_batch)
+        temp = agent.update(X_batch,y_batch)
+        loss_t += temp
+        loss_e_t += temp
 
         if (idx+1)%10 ==0 :
             y_batch_val, X_batch_val = next(val_iterator)
@@ -74,10 +77,17 @@ for epoch in range(1,args.num_epochs):
             X_batch_val = X_batch_val.to(cuda)
 
             loss_v = agent.validate(X_batch_val,y_batch_val)
+            loss_e_v += loss_v
             eval_dict = dict()
-            eval_dict['train_loss'] = loss_t/10
-            eval_dict['val_loss'] = loss_v
+            eval_dict['training_loss'] = loss_t/10
+            eval_dict['validation_loss'] = loss_v
             loss_t = loss_v =0
             tensorboard_eval.write_episode_data(epoch*len(train_loader)+idx, eval_dict)
             if args.save_snaps :
                 agent.save(snapshot_dir)
+        
+    epoch_dict = dict()
+    epoch_dict['training_loss_epoch'] = loss_e_t/len(train_loader)
+    epoch_dict['validation_loss_epoch'] = loss_e_v/len(val_loader)
+    tensorboard_eval.write_episode_data(epoch*len(train_loader)+idx, epoch_dict)
+    loss_e_t = loss_e_v = 0
