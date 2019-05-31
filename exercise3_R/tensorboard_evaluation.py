@@ -14,7 +14,7 @@ class Evaluation:
         self.tf_writer = tf.summary.FileWriter(os.path.join(store_dir, "%s-%s" % (name, datetime.now().strftime("%Y%m%d-%H%M%S")) ))
 
         self.stats = stats
-        self.pl_stats = {}
+        
         
         
 
@@ -23,11 +23,12 @@ class Evaluation:
             Write episode statistics in eval_dict to tensorboard, make sure that the entries in eval_dict are specified in stats.
             e.g. eval_dict = {"loss" : 1e-4}
         """
-        for s in self.stats:
+        self.pl_stats = {}
+        for s in eval_dict.keys:
             self.pl_stats[s] = tf.placeholder(tf.float32, name=s)
             tf.summary.scalar(s, self.pl_stats[s])
         self.performance_summaries = tf.summary.merge_all()
-        
+
         my_dict = {}
         for k in eval_dict:
             assert(k in self.stats)
