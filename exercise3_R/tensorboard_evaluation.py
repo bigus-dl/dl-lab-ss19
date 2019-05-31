@@ -27,10 +27,10 @@ class Evaluation:
         Write episode statistics in eval_dict to tensorboard, make sure that the entries in eval_dict are specified in stats.
         e.g. eval_dict = {"loss" : 1e-4}
        """
-       #my_dict = {}
+       my_dict = {}
        for k in eval_dict:
           assert(k in self.stats)
-          #my_dict[self.pl_stats[k]] = eval_dict[k]
+          my_dict[self.pl_stats[k]] = eval_dict[k]
 
        summary = self.sess.run(self.performance_summaries, feed_dict=eval_dict)
 
