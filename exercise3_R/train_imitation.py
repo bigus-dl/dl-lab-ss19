@@ -10,6 +10,7 @@ import torch
 from imitation_learning.agent.bc_agent import BCAgent
 from imitation_learning.dataloader import get_data_loader
 from tensorboard_evaluation import Evaluation
+from tensorboardX import SummaryWriter
 
 datasets_dir = "./imitation_learning/data"
 snapshot_dir = "./imitation_learning/snaps/snap"
@@ -51,9 +52,9 @@ if(args.continute_training):
         print("snapshot file(s) not found")
 
 #tensorboard --logdir=path/to/log-directory --port=6006
-print("starting tensorboard")
-tensorboard_eval = Evaluation(name="eval_"+args.name ,store_dir=tensorboard_dir, stats= ['training_loss', 'validation_loss', 'epoch_training_loss', 'epoch_validation_loss'])
-
+#print("starting tensorboard")
+#tensorboard_eval = Evaluation(name="eval_"+args.name ,store_dir=tensorboard_dir, stats= ['training_loss', 'validation_loss', 'epoch_training_loss', 'epoch_validation_loss'])
+writer = SummaryWriter(logdir=tensorboard_dir)
 # losses
 loss_t = loss_v = 0
 loss_e_t = loss_e_v = 0
@@ -78,16 +79,12 @@ for epoch in range(1,args.num_epochs):
 
             loss_v = agent.validate(X_batch_val,y_batch_val)
             loss_e_v += loss_v
-            eval_dict = dict()
-            eval_dict['training_loss'] = loss_t/10
-            eval_dict['validation_loss'] = loss_v
+            writer.add_scalar("training_loss", loss_t/10, epoch*len(train_loader)+idx)
+            writer.add_scalar("validation_loss", loss_v, epoch*len(train_loader)+idx)
             loss_t = loss_v =0
-            tensorboard_eval.write_episode_data(epoch*len(train_loader)+idx, eval_dict)
             if args.save_snaps :
                 agent.save(snapshot_dir)
         
-    epoch_dict = dict()
-    epoch_dict['epoch_training_loss'] = loss_e_t/len(train_loader)
-    epoch_dict['epoch_validation_loss'] = loss_e_v/len(val_loader)
-    tensorboard_eval.write_episode_data(epoch*(len(train_loader)+1), epoch_dict)
-    loss_e_t = loss_e_v = 0
+    writer.add_scalar("epoch_training_loss", loss_e_t, epoch*(len(train_loader)+1))
+    writer.add_scalar("epoch_validation_loss", loss_v_t, epoch*(len(train_loader)+1))
+s    loss_e_t = loss_e_v = 0
