@@ -9,7 +9,6 @@ import torch
 
 from imitation_learning.agent.bc_agent import BCAgent
 from imitation_learning.dataloader import get_data_loader
-from tensorboard_evaluation import Evaluation
 from tensorboardX import SummaryWriter
 
 datasets_dir = "./imitation_learning/data"
