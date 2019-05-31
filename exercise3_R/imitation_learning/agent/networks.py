@@ -31,10 +31,13 @@ class CNN(nn.Module):
 
     def forward(self, x):
         x = self.conv1(x)
+        x = self.pool1(x)
         x = self.rlu(x)
         x = self.conv2(x)
+        x = self.pool2(x)
         x = self.rlu(x)
         x = self.conv3(x)
+        x = self.pool3(x)
         x = self.rlu(x)
         print(x.shape)
         x = x.view(x.size(0),-1)
