@@ -27,9 +27,9 @@ class CNN(nn.Module):
         x = self.conv1(x)
         x = self.conv2(x)
 
-        #print("before ", x.shape)
+        print("before ", x.shape)
         x = x.view(x.size(0),-1)
-        #print("after ", x.shape)
+        print("after ", x.shape)
 
         x = self.fc1(x)
         x = self.rl1(x)
