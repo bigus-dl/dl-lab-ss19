@@ -23,8 +23,9 @@ class Evaluation:
             Write episode statistics in eval_dict to tensorboard, make sure that the entries in eval_dict are specified in stats.
             e.g. eval_dict = {"loss" : 1e-4}
         """
+        self.stats = []
         self.pl_stats = {}
-        for s in eval_dict.keys:
+        for s in eval_dict.keys():
             self.pl_stats[s] = tf.placeholder(tf.float32, name=s)
             tf.summary.scalar(s, self.pl_stats[s])
         self.performance_summaries = tf.summary.merge_all()
