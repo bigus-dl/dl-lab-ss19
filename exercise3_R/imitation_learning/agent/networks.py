@@ -24,27 +24,34 @@ class CNN(nn.Module):
         self.pool3 = torch.nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
 
         # input 32x11x11
-        self.fc1 = torch.nn.Linear(32*11*11, 64)
-        self.fc2 = torch.nn.Linear(64, 16)
-        self.fc3 = torch.nn.Linear(16, n_classes)
+        self.fc1 = torch.nn.Linear(32*11*11, 128)
+        self.fc2 = torch.nn.Linear(128, 64)
+        self.fc3 = torch.nn.Linear(64   , n_classes)
         self.rlu = torch.nn.ReLU()
+        self.drp = torch.nn.Dropout(0.5)
 
     def forward(self, x):
         x = self.conv1(x)
         x = self.pool1(x)
         x = self.rlu(x)
+
         x = self.conv2(x)
         x = self.pool2(x)
         x = self.rlu(x)
+
         x = self.conv3(x)
         x = self.pool3(x)
         x = self.rlu(x)
+
         x = x.view(x.size(0),-1)
 
         x = self.fc1(x)
         x = self.rlu(x)
+        x = self.drp(x)
+        
         x = self.fc2(x)
         x = self.rlu(x)
+
         x = self.fc3(x)
         return x
 

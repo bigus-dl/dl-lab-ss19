@@ -56,21 +56,6 @@ class PickleReader(torch.utils.data.Dataset):
         label = torch.LongTensor([label])
 
         return label, samples
-        '''
-        else :
-            label = self.y[idx,:]
-            sample = self.X[idx,:]
-
-            # preprocess data
-            label = action_to_id(label)
-            label = torch.LongTensor([label])
-            sample = rgb2gray(sample)
-            sample = sample/255
-            sample = sample[np.newaxis,:,:]
-            sample = torch.from_numpy(sample)
-
-            return label, sample
-        '''
     def __len__(self):
         return len(self.y)
 

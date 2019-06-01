@@ -18,7 +18,6 @@ def run_episode(env, agent, rendering=True, max_timesteps=1000, history=1):
     step = 0
 
     state = env.reset()
-    
     # fix bug of curropted states without rendering in racingcar gym environment
     env.viewer.window.dispatch_events() 
     history_tensor = torch.zeros(1,history,96,96)
@@ -34,12 +33,20 @@ def run_episode(env, agent, rendering=True, max_timesteps=1000, history=1):
         # set channel 0 to current state
         history_tensor[0,0] = state
         a = agent.predict(history_tensor)
+        print("network output, \tsoftmax : {} {}".format(a,torch.nn.functional.softmax(a,dim=0)))
         a = torch.nn.functional.softmax(a)
-        print("softmax output {}".format(a.detach().numpy()))
+        
+        a = torch.argmax(a).item()
+        nstr =  "straight"  if a==0 else \
+                "left"      if a==1 else \
+                "right"     if a==2 else \
+                "accel"     if a==3 else "brake"
+                    
+        # print("network output "+nstr)
         # run #1    = 0.8
         # pure run  = 1.0
         # 3 now8    = 0.8
-        a = id_to_action(torch.argmax(a).item(),max_speed=0.4)
+        a = id_to_action(a, max_speed=0.7)
         next_state, r, done, info = env.step(a)   
         episode_reward += r       
         state = next_state
@@ -63,7 +70,7 @@ if __name__ == "__main__":
 
     # TODO: load agent
     agent = BCAgent(history=1)
-    mname = "pure"
+    mname = "h1_n"
     agent.load("./imitation_learning/snaps/snap"+mname)
     env = gym.make('CarRacing-v0').unwrapped
 
