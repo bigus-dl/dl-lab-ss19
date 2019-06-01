@@ -81,6 +81,6 @@ def get_data_loader(datasets_dir, frac=0.1, batch_size=1, is_train=False, single
     
     data_loader = torch.utils.data.DataLoader(reader,
                                               batch_size=batch_size,
-                                              shuffle=is_train,
+                                              shuffle=False,
                                               num_workers=4 if is_train else 1)
     return data_loader
