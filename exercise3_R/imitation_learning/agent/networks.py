@@ -12,35 +12,23 @@ class CNN(nn.Module):
         super(CNN, self).__init__()
 
         # input 96x96
-        self.conv1 = torch.nn.Conv2d(history_length, 64, kernel_size=5, stride=1, padding=1)
-        self.pool1 = torch.nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
-
-        # input 47x47
-        self.conv2 = torch.nn.Conv2d(64, 64, kernel_size=4, stride=1, padding=1)
-        self.pool2 = torch.nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
-
+        self.conv1 = torch.nn.Conv2d(history_length, 64, kernel_size=6, stride=2, padding=0)
+        self.rlu = torch.nn.ReLU()
+        # input 46x46
+        self.conv2 = torch.nn.Conv2d(64, 32, kernel_size=4, stride=2, padding=0)
         # input 22x22
-        self.conv3 = torch.nn.Conv2d(64, 32, kernel_size=3, stride=1, padding=1)
-        self.pool3 = torch.nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
+        self.fc1 = torch.nn.Linear(32*22*22, 32)
+        self.fc2 = torch.nn.Linear(32, n_classes)
 
-        # input 32x11x11
-        self.fc1 = torch.nn.Linear(32*11*11, 128)
-        self.fc2 = torch.nn.Linear(128, 64)
-        self.fc3 = torch.nn.Linear(64   , n_classes)
+        # activation, regul.
         self.rlu = torch.nn.ReLU()
         self.drp = torch.nn.Dropout(0.5)
 
     def forward(self, x):
         x = self.conv1(x)
-        x = self.pool1(x)
         x = self.rlu(x)
 
         x = self.conv2(x)
-        x = self.pool2(x)
-        x = self.rlu(x)
-
-        x = self.conv3(x)
-        x = self.pool3(x)
         x = self.rlu(x)
 
         x = x.view(x.size(0),-1)
@@ -50,8 +38,5 @@ class CNN(nn.Module):
         x = self.drp(x)
         
         x = self.fc2(x)
-        x = self.rlu(x)
-
-        x = self.fc3(x)
         return x
 

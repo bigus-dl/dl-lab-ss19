@@ -51,8 +51,7 @@ if(args.continute_training):
         print("snapshot file(s) not found")
 
 #tensorboard --logdir=./tensorboard --port=6006
-#print("starting tensorboard")
-#tensorboard_eval = Evaluation(name="eval_"+args.name ,store_dir=tensorboard_dir, stats= ['training_loss', 'validation_loss', 'epoch_training_loss', 'epoch_validation_loss'])
+print("starting tensorboard")
 writer = SummaryWriter(os.path.join(tensorboard_dir,args.name))
 # losses
 loss_t = loss_v = 0
@@ -87,4 +86,3 @@ for epoch in range(1,args.num_epochs):
     loss_e_t = loss_e_v = 0
     if args.save_snaps :
         agent.save(snapshot_dir)
-    
