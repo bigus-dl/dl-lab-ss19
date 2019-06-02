@@ -63,13 +63,13 @@ def run_episode(env, agent, rendering=True, max_timesteps=1000, history=1, max_s
 if __name__ == "__main__":
 
     # important: don't set rendering to False for evaluation (you may get corrupted state images from gym)
-    rendering = False                     
+    rendering = False
     
     # args for running episodes
     n_test_episodes = 15
-    mxs = 0.7
-    mname = "h5"
-    hist = 5
+    mxs = 1
+    mname = "h3_small_new"
+    hist = 3
 
     # TODO: load agent
     agent = BCAgent(history=hist)
@@ -87,7 +87,7 @@ if __name__ == "__main__":
     results["mean"] = np.array(episode_rewards).mean()
     results["std"] = np.array(episode_rewards).std()
     
-    print ("mean : {}, std : {}".format(results["mean"],results["std"]))
+    print ("model : {}, mean : {}, std : {}".format(mname, results["mean"],results["std"]))
     
     fname = "./imitation_learning/results/results_bc_agent_{}_{}".format(mname,mxs)
     fh = open(fname, "w")
