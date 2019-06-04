@@ -83,6 +83,8 @@ for epoch in range(1,args.num_epochs):
 
     writer.add_scalar("epoch_training_loss", loss_e_t/len(train_loader), epoch*(len(train_loader)+1))
     writer.add_scalar("epoch_validation_loss", loss_e_v/len(val_loader), epoch*(len(train_loader)+1))
+    
     loss_e_t = loss_e_v = 0
     if args.save_snaps :
         agent.save(snapshot_dir)
+    writer.close()
