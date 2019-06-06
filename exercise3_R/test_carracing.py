@@ -71,7 +71,7 @@ if __name__ == "__main__":
     history_length =  3
     num_actions = 5
     model_dir = "./carracing"
-    model_name = "dqn_carracing_eval_903"
+    model_name = "dqn_carracing_eval_883"
     q_net      = CNN(inputs=history_length+1,outputs=num_actions)
     target_net = CNN(inputs=history_length+1,outputs=num_actions)
     # working 

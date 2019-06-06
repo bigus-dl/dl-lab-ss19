@@ -202,14 +202,11 @@ class NaturalCubicSpline(AbstractSpline):
 data_episode = []
 data_epoch = []
 data_str = []
-data_episode.append(pd.read_csv('./csv/valid/run-cartpole-hard-update-tag-mean_eval_reward.csv', index_col=False))
-data_str.append("hard-update")
+data_episode.append(pd.read_csv('./csv/run-ddqn-softh4-b16-force10-skip-2-tag-episode_reward.csv', index_col=False))
+data_str.append("training")
 
-data_episode.append(pd.read_csv('./csv/valid/run-cartpole-soft-update-tag-mean_eval_reward.csv', index_col=False))
-data_str.append("soft-update")
-
-data_episode.append(pd.read_csv('./csv/valid/run-cartpole-v1-tag-mean_eval_reward.csv', index_col=False))
-data_str.append("hard-update-400")
+data_episode.append(pd.read_csv('./csv/run-ddqn-softh4-b16-force10-skip-2-tag-mean_eval_reward.csv', index_col=False))
+data_str.append("evaluation")
 
 #sb.set()
 sb.set_style("darkgrid", {'axes.axisbelow': False, 'axes.edgecolor' : 'black'})
@@ -218,7 +215,9 @@ fig = plt.figure()
 for i in range(len(data_episode)):
     arr = data_episode[i].values[:,2]
     xnew = np.arange(0,len(arr),1)
-    model_15 = get_natural_cubic_spline_model(xnew, arr, minval=min(xnew), maxval=max(xnew), n_knots=70)
+    if i==1 :
+        xnew = xnew*10
+    model_15 = get_natural_cubic_spline_model(xnew, arr, minval=min(xnew), maxval=max(xnew), n_knots=100)
     ynew = model_15.predict(xnew)
     plt.xlabel("episode")
     plt.ylabel("reward")
