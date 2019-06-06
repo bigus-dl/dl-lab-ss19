@@ -13,9 +13,6 @@ class MLP(nn.Module):
     self.fc1 = nn.Linear(state_dim, hidden_dim)
     self.fc2 = nn.Linear(hidden_dim, hidden_dim)
     self.fc3 = nn.Linear(hidden_dim, action_dim)
-    torch.nn.init.xavier_uniform_(self.fc1.weight)
-    torch.nn.init.xavier_uniform_(self.fc2.weight)
-    torch.nn.init.xavier_uniform_(self.fc3.weight)
 
   def forward(self, x):
     x = F.relu(self.fc1(x))
@@ -25,6 +22,29 @@ class MLP(nn.Module):
 class CNN(nn.Module):
   def __init__(self,inputs, outputs):
     super(CNN, self).__init__()
+    self.conv1 = nn.Conv2d(inputs, 16, kernel_size=6, stride=2)
+    self.bn1 = nn.BatchNorm2d(16)
+    self.conv2 = nn.Conv2d(16, 32, kernel_size=6, stride=2)
+    self.bn2 = nn.BatchNorm2d(32)
+  
+    linear_input_size = 21 * 21 * 32
+    self.head = nn.Linear(linear_input_size, 256)
+    self.tail = nn.Linear(256, outputs)
+
+  def forward(self, x):
+    x = F.relu(self.bn1(self.conv1(x)))
+    x = F.relu(self.bn2(self.conv2(x)))
+
+    x = x.view(x.size(0), -1)
+    x = self.head(x)
+    x = F.relu(x)
+    x = self.tail(x)
+    return x
+
+
+class CNNO(nn.Module):
+  def __init__(self,inputs, outputs):
+    super(CNNO, self).__init__()
     self.conv1 = nn.Conv2d(inputs, 16, kernel_size=6, stride=2)
     self.bn1 = nn.BatchNorm2d(16)
     self.conv2 = nn.Conv2d(16, 32, kernel_size=6, stride=2)
@@ -55,5 +75,3 @@ class CNN(nn.Module):
     x = F.relu(x)
     x = self.tail(x)
     return x
-
-

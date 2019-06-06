@@ -87,33 +87,39 @@ class DQNAgent:
                 print("burn-in phase finished")
             return
         
+        # preprocessing
         batch_states, batch_actions, batch_next_states, batch_rewards, batch_dones = self.replay_buffer.next_batch(self.batch_size)
         batch_next_states = torch.from_numpy(batch_next_states).to(self.device)
         batch_next_states = batch_next_states.permute(0,3,1,2)
         batch_states = torch.from_numpy(batch_states).to(self.device)
         batch_states = batch_states.permute(0,3,1,2)
-
         batch_dones= torch.from_numpy(batch_dones).float().to(self.device)
+        batch_dones = 1-batch_dones
         batch_rewards = torch.from_numpy(batch_rewards).float().to(self.device)
         batch_actions = torch.from_numpy(batch_actions).long().to(self.device)
         batch_actions = batch_actions.unsqueeze(dim=1)
-
-        mat1 = torch.ones(batch_dones.shape)-batch_dones
-        mat2 = torch.max(self.Q_target(batch_next_states), dim=1)[0]
-        # mat2 = mat2.detach()
-        td_targets = batch_rewards + self.gamma * mat1 * mat2
-        td_targets = td_targets.detach()
-
+        
+        # trying double Q learning
+        qnet_output = self.Q(batch_states)
+        qnet_output = torch.gather(input=qnet_output, dim=1, index=batch_actions).squeeze()
+        qnet_output_next = self.Q(batch_next_states)
+        qnet_actions = torch.argmax(qnet_output_next, dim=1)
+        
+        qtarget_output = self.Q_target(batch_next_states)
+        qnet_actions = qnet_actions.unsqueeze(dim=1)
+        qtarget_output = torch.gather(input=qtarget_output, dim=1, index=qnet_actions).squeeze()
+        
+        td_targets = batch_rewards + self.gamma * batch_dones * qtarget_output
         self.optimizer.zero_grad()
         self.Q.train()
-        output = self.Q(batch_states)
-        output = torch.gather(input=output, dim=1, index=batch_actions).squeeze()
-        assert output.requires_grad
 
-        loss = self.loss_function(td_targets, output)
+        assert qnet_output.requires_grad, "no gradient flowing back to q_net"
+        assert qnet_output.shape == td_targets.shape, "shape mismatch in loss function"
+
+        loss = self.loss_function(qnet_output, td_targets)
         loss.backward()
         self.optimizer.step()
-        
+
         # hard/soft update target net
         if self.update == "soft" :
             self.soft_update(self.Q_target, self.Q, self.tau)
@@ -176,16 +182,15 @@ class DQNAgent:
         #            left            right           accel.          brake           straight
         #normal:     0.17568         0.08076         0.27278         0.02236         0.44842
         # if still in burn-in phase 
-
-        if self.history<= self.burn_in:
+        if self.history < self.burn_in:
             r = np.random.uniform()
-            if   r<=0.3:
+            if   r<=0.45:
                 action_id = ACCELERATE
-            elif r<=0.71:
+            elif r<=0.75:
                 action_id = STRAIGHT
-            elif r<=0.88:
+            elif r<=0.85:
                 action_id = LEFT
-            elif r<=0.97:
+            elif r<=0.95:
                 action_id = RIGHT
             else: 
                 action_id = BRAKE
@@ -200,13 +205,13 @@ class DQNAgent:
             return action_id
         else:
             r = np.random.uniform()
-            if   r<=0.3:
+            if   r<=0.45:
                 action_id = ACCELERATE
-            elif r<=0.71:
+            elif r<=0.75:
                 action_id = STRAIGHT
-            elif r<=0.88:
+            elif r<=0.85:
                 action_id = LEFT
-            elif r<=0.97:
+            elif r<=0.95:
                 action_id = RIGHT
             else: 
                 action_id = BRAKE
